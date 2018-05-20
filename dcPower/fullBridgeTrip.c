@@ -16,7 +16,7 @@ void trip_recording(int trip_code,float trip_data,char * st)
 	TripInfoNow.DATA	= trip_data;
 	strncpy( TripInfoNow.MSG,st,20) ;
 	gMachineState 		= STATE_TRIP;
-	TripInfoNow.CURRENT	= I_out;
+	TripInfoNow.CURRENT	= Iout;
 	TripInfoNow.VDC 	= Vdc;
 	TripInfoNow.VOUT 	= Vout;
 //	TripInfoNow.HZ 		= Freq_out;
@@ -25,38 +25,32 @@ void trip_recording(int trip_code,float trip_data,char * st)
 int CheckOverCurrent( )
 {
 //--- OC I_pri check
-	if(( protect_reg.bit.OVER_I_ADC)&&( adcI_pri > 4000)){
-		trip_recording( ERR_OC_I_PRI_ADC_P, (double)(adcI_pri),"I_pri adc + over");
+	if(( protect_reg.bit.OVER_I_ADC)&&( adcIpri > 4000)){
+		trip_recording( ERR_OC_I_PRI_ADC_P, (float)(adcIpri),"adcIpri over");
 		return ERR_OC_I_PRI_ADC_P;
 	}
-
-	if(( protect_reg.bit.OVER_I_ADC)&&( adcI_pri  < 100)){ 
-		trip_recording( ERR_OC_I_PRI_ADC_N, (double)(adcI_pri),"I_pri adc - over");
+	if(( protect_reg.bit.OVER_I_ADC)&&( adcIpri  < 100)){
+		trip_recording( ERR_OC_I_PRI_ADC_N, (float)(adcIpri),"adcIpri under");
 		return ERR_OC_I_PRI_ADC_N;
 	}
-
 //--- OC I_out check
-	if(( protect_reg.bit.OVER_I_ADC)&&( adcI_out > 4000)){
-		trip_recording( ERR_OC_I_OUT_ADC_P, (double)(adcI_out),"I_out adc +over ");
+	if(( protect_reg.bit.OVER_I_ADC)&&( adcIout > 4000)){
+		trip_recording( ERR_OC_I_OUT_ADC_P, (float)(adcIout),"adcIout over ");
 		return ERR_OC_I_OUT_ADC_P;
 	}
-
-	if(( protect_reg.bit.OVER_I_ADC)&&( adcI_out  < 100)){ 
-		trip_recording( ERR_OC_I_OUT_ADC_N, (double)(adcI_pri),"I_out adc -over");
+	if(( protect_reg.bit.OVER_I_ADC)&&( adcIout  < 100)){
+		trip_recording( ERR_OC_I_OUT_ADC_N, (float)(adcIout),"adcIout under");
 		return ERR_OC_I_OUT_ADC_N;
 	}
-
-
 	if( protect_reg.bit.OVER_I){
-		if(I_out > OverCurLimit )	OC_Timer += Ts;
+		if(Iout > OverCurLimit )	OC_Timer += Ts;
 		else if(OC_Timer > Ts)		OC_Timer -= Ts;
 
 		if (OC_Timer > codeOcTime ){
-			trip_recording( CODE_OC_Time,I_out,"OC Time out");
+			trip_recording( CODE_OC_Time,Iout,"OC Time out");
 			return	CODE_OC_Time;
 		}
 	} 
-
 	return 	0; 
 }
 

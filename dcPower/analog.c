@@ -35,53 +35,66 @@ void ADC_SOC_CNF( )
 //    AdcRegs.ADCSAMPLEMODE.all = 0;      // Simultaneous sample mode
     EDIS;
 }
-#define adcIuOffset     2585
-#define adcIvOffset     2578
+
+#define ADC_IOUT_OFFSET     2048
+#define ADC_IPRI_OFFSET     2048
+#define ADC_VOUT_OFFSET     2048
+#define ADC_VDC_OFFSET     2048
+
 //--- 전류의 계산 : 66mV / A  :  3.3V -> 50A, 1 count = 50 / 4096 = 0.012207
 #define I_RATIO         0.012207
+//      vout scale = 20.0V / ( 4096/2 )
+#define IOUT_SCALE      0.48828        // 1000A / 2048
+#define IPRI_SCALE      0.097656        //  200A / 2048
+#define VOUT_SCALE      0.009765       // 20.0 / (2048)
+#define VDC_SCALE       0.39062        // 800V  / 2048
+
+#define VDC_OFFSET      0.0
+#define VOUT_OFFSET     0.0
+#define IOUT_OFFSET     0.0
+#define IPRI_OFFSET     0.0
+
 __interrupt void adcIsr(void)
 {
-//    int temp;
+//    TRIP_OUT_ON;
+    //    int temp;
+    adc_result[0] = adcIout = AdcResult.ADCRESULT0;           // Iout
+    adc_result[1] = adcIpri = AdcResult.ADCRESULT1;           // Ipri
+    adc_result[2] = adcVdc  = AdcResult.ADCRESULT2; // Vdc
+    adc_result[3] = adcVout = AdcResult.ADCRESULT3; // Vout
 
-    adc_result[0] = adcI_out   = AdcResult.ADCRESULT0;
-    adc_result[1] = adcI_pri   = AdcResult.ADCRESULT1;
-//    adc_result[2] = adcVdc  = AdcResult.ADCRESULT2;
-//    adc_result[3] = adcVout = AdcResult.ADCRESULT3;
+    nativeIout = IOUT_SCALE * ( adcIout-ADC_IOUT_OFFSET )  + IOUT_OFFSET;
+    nativeIpri = IPRI_SCALE * ( adcIpri-ADC_IPRI_OFFSET )  + IPRI_OFFSET;
+    nativeVout = VOUT_SCALE * ( adcVout-ADC_VOUT_OFFSET )  + VOUT_OFFSET;
+    nativeVdc  = VDC_SCALE  * ( adcVdc  -ADC_VDC_OFFSET )  +  VDC_OFFSET;
 
-    Vout = VoutScale * phaseShiftRatio  + VoutOffset ;
+    lpfIoutIn[0] = nativeIout;
+    lpf2nd( lpfIoutIn, lpfIoutOut, lpfIoutK);
+    Iout = lpfIoutOut[0];
 
-//    nativeI_out =  - codeIValueOut * (double)(  adc_result[0] -codeIAdcOffsetOut) * adc_const * codeISpanOut;
-//    nativeI_pri =  - codeIValue1st * (double)(  adc_result[1] -codeIAdcOffset1st) * adc_const * codeISpan1st;
+    lpfVoutIn[0] = nativeVout;
+    lpf2nd( lpfVoutIn, lpfVoutOut, lpfVoutK);
+    Vout = lpfVoutOut[0];
 
-    Vdc = VdcScale * (float) adc_result[14] + VdcOffset ;
+    lpfVdcIn[0] = nativeVdc;
+    lpf2nd( lpfVdcIn, lpfVdcOut, lpfVdcK);
+    Vdc = lpfVdcOut[0];
 
-//    LPF1( Ts,20.0, (double)(adcI_out), & lpfI_out);
-
-    if( gMachineState == STATE_READY){ I_out = 0.0; Vout = 0.0;}
+    if( gMachineState == STATE_READY){ Iout = 0.0; Vout = 0.0;}
     if( code_set_Vdc_on ) Vdc = code_Vdc_set_value; // 2012.11.20
 
-    Power_out = Vout * I_out ;
+    Pout = Vout * Iout ;
 
     AdcRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;       //Clear ADCINT1 flag reinitialize for next SOC
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;   // Acknowledge interrupt to PIE
+//    TRIP_OUT_OFF;
     return;
-}
-
-void analog_input_proc( float * referenc)
-{
-//	* referenc = analog_ref_a * analog_cmd_in_span1 - analog_cmd_in_zero1;
-}
-
-void analog_out_proc( )
-{
 }
 
 int check_sensor_trip()
 {
 	int TripCode;
-
 	Nop();
-
 	if( ( TripCode = CheckOverCurrent()) != 0 ) return TripCode ;	// debug
 	if( ( TripCode = CheckOverVolt()   ) != 0 ) return TripCode ;
 	if( ( TripCode = CheckUndeVolt()   ) != 0 ) return TripCode ;	//

@@ -1,6 +1,12 @@
 #ifndef		__GLOBAL_VARIABLES_
 #define		__GLOBAL_VARIABLES_
 
+#if USE_GRAPH
+int graphCount=0;
+int y1_data[GRAPH_NUMBER];
+int y2_data[GRAPH_NUMBER];
+#endif
+
 char monitOut[61];
 
 float under_volt_set;
@@ -12,15 +18,24 @@ float ctrlIntegral;
 float preIntegral;
 float phaseShiftRatio;
 
-float Power_out;
 int code_run_input_select;
 float OC_Timer;
 float ovpTimer;
+
+float nativeIout;
+float nativeIpri;
+float nativeVout;
+float nativeVdc;
+
+float Pout;
+float Ipri;
+float Iout;
 float Vout;
-int adcI_pri;
-int adcI_out;
-float I_pri;
-float I_out;
+
+int adcIpri;
+int adcIout;
+int adcVout;
+int adcVdc;
 
 float monitor[5]={0.0};
 int debug_count;
@@ -86,7 +101,7 @@ char gSciaRxBuf[SCIA_RX_BUF_MAX+1];
 char gSciaTxBuf[SCIA_TX_BUF_MAX+1];
 int gMachineState=0;
 int	gPWMTripCode;
-int adc_result[16]={0};
+int adc_result[4]={0};
 int	giAdcVdc	;
 TRIP_INFO TripInfo = {0,0,0,0,0,"2008:07:24  00:01:23"," No Trip Data       "};
 TRIP_INFO TripInfoNow = {0,0,0,0,0,"2008:07:24  00:01:23"," No Trip Data       "};

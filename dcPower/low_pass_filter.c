@@ -10,8 +10,9 @@
 
 #define LPF_ZETA 0.707
 
-float lpfVdcIn[3],lpfVdcOut[3],lpfVdcK[4];
 float lpfIoutIn[3], lpfIoutOut[3],lpfIoutK[4];
+float lpfVoutIn[3], lpfVoutOut[3],lpfVoutK[4];
+float lpfVdcIn[3],lpfVdcOut[3],lpfVdcK[4];
 
 void lpf2ndCoeffInit( float cutoff_freq, float T_sample, float *x, float *y, float *k)
 {

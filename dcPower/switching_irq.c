@@ -14,11 +14,12 @@ interrupt void MainPWM(void)
 //	unsigned int temp;
 	static int invt_PWM_Port_Set_flag = 0;
 
+//	MAIN_CHARGE_ON;
+
 	if ( EX_TRIP_INPUT == 0 ){
 	    gPWMTripCode = TRIP_EXT_A;
 		trip_recording( TRIP_EXT_A, TRIP_EXT_A ,"TRIP EXT A");
 	}
-
 	if(gPWMTripCode == 0){ 
 		gPWMTripCode = tripCheck();		// debug_soonkil
 		if(gPWMTripCode != 0 ){
@@ -84,7 +85,7 @@ interrupt void MainPWM(void)
 
 			if( code_ctrl_mode == 3 ){ 
 
-				ctrlError =  reference_out -  I_out * 0.001; // 1000 Amp Max�� ����� 
+				ctrlError =  reference_out -  Iout * 0.001; // 1000 Amp Max�� �����
 				ctrlIntegral = preIntegral + (Ts * code_Ki * ctrlError);
 				ctrlIntegral = (ctrlIntegral > code_integLimit) ? code_integLimit : ( ctrlIntegral < -code_integLimit) ? -code_integLimit : ctrlIntegral;
 
@@ -140,14 +141,27 @@ interrupt void MainPWM(void)
 			break;
 	}
 
-_PWM_OUT_END:
+#if USE_GRAPH
+	if(graphCount<GRAPH_NUMBER){
+        y1_data[graphCount] = adc_result[2];
+        y2_data[graphCount] = adc_result[3];
+        // y1_data[graphCount] = adcIout;
+        // y2_data[graphCount] = adcVdc;
+        graphCount ++;
+    }
+    else graphCount = 0;
+#endif
 
+_PWM_OUT_END:
 
 //--- digital out
     digitalOutProc();
 
 	EPwm1Regs.ETCLR.bit.INT = 1;	
 	PieCtrlRegs.PIEACK.all = PIEACK_GROUP3;
+
+//	MAIN_CHARGE_OFF;
+	return;
 }
 
 // end of switching_irq.c 

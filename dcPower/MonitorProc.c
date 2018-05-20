@@ -33,10 +33,10 @@ void monitorPrint( char * str, float argIn)
 
 void monitor_proc()     // need_edit
 {
+    // Uint32 RunTimeMsec=0 ;
+    // static unsigned long StartTimeMsec = 0 ;
     int i,j,k,temp;
-    Uint32 RunTimeMsec=0 ;
     char str[12]={0};
-    static unsigned long StartTimeMsec = 0 ;
 
     switch(gMachineState){
         case STATE_POWER_ON:    strncpy(MonitorMsg,"[POWON]",7); break;
@@ -58,11 +58,10 @@ void monitor_proc()     // need_edit
     }
 
     strncpy(monitOut,MonitorMsg,7);
-    monitor[0] = I_out = 613.2;
-    monitor[1] = Vout = 8.23;
-    monitor[2] = Power_out = I_out * Vout;
-    monitor[2] = monitor[2]/1000;
-    monitor[3] = Vdc=512.5;
+    monitor[0] = Iout;
+    monitor[1] = Vout;
+    monitor[2] = Pout/1000.0;
+    monitor[3] = Vdc;
     monitOut[7]=',';
     for( i = 0; i < 4 ; i ++ ){
         monitorPrint( str, monitor[i]);

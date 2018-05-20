@@ -8,14 +8,12 @@
 #include	"extern.h"
 #include	"global.h"
 
-#if FLASH_RUN
 #pragma CODE_SECTION(MainPWM, "ramfuncs");
 #pragma CODE_SECTION(adcIsr, "ramfuncs");
 extern Uint16 RamfuncsLoadStart;
 extern Uint16 RamfuncsLoadEnd;
 extern Uint16 RamfuncsRunStart;
 Uint16 RamfuncsLoadSize;
-#endif
 
 void InitWatchDog();
 extern interrupt void MainPWM(void);
@@ -27,8 +25,9 @@ float Vdc_fnd_data;
 
 void main( void )
 {
-    UNION32 data;
-    int i,trip_code,loop_ctrl,temp;
+    // UNION32 data;
+    // int i;
+    int trip_code,loop_ctrl,temp;
 	int cmd;
 	float ref_in0;
 
@@ -43,10 +42,8 @@ void main( void )
 
 	gMachineState = STATE_POWER_ON; 
 	DINT;
-#if FLASH_RUN
 	memcpy(&RamfuncsRunStart, &RamfuncsLoadStart, (Uint32)&RamfuncsLoadSize);
 	InitFlash();
-#endif
 	InitPieCtrl();
 	IER = 0x0000;   IFR = 0x0000;
 	InitPieVectTable();
@@ -103,8 +100,10 @@ void main( void )
     if( temp ) tripProc();
 
     initVariFullbridgeCtrl();
-    lpf2ndCoeffInit( 1000.0,Ts, lpfVdcIn, lpfVdcOut, lpfVdcK);
-    lpf2ndCoeffInit( 100.0, Ts, lpfIoutIn, lpfIoutOut, lpfIoutK);
+
+    lpf2ndCoeffInit( 1000.0, Ts, lpfIoutIn, lpfIoutOut, lpfIoutK);
+    lpf2ndCoeffInit(  100.0, Ts, lpfVoutIn, lpfVoutOut, lpfVoutK);
+    lpf2ndCoeffInit( 1000.0, Ts, lpfVdcIn,    lpfVdcOut, lpfVdcK);
 
 	IER &= ~M_INT3;      // debug for PWM
     initEpwmFullBridge();   // debug
@@ -171,14 +170,11 @@ void main( void )
 		if( gPWMTripCode !=0 )	tripProc();
 		gPWMTripCode = tripCheck();
 		if( gPWMTripCode !=0 )	tripProc();
+
+        monitor_proc();
 		get_command( & cmd, & ref_in0);
-//		analog_out_proc( );
-		if(cmd == CMD_READ_ALL ){
-		    readAllCodes();
-		}
-		monitor_proc();
-		if(cmd == CMD_START){	// if( cmd == CMD_START )
-		    trip_code = 0;
+		if(cmd == CMD_READ_ALL )    readAllCodes();
+		if(cmd == CMD_START){
 		    temp = (int)(floor(code_ctrl_mode+0.5));
 		    switch(temp)
 		    {

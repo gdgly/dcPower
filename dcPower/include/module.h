@@ -66,9 +66,6 @@ interrupt void MainPWM(void);
 // analog.c
 extern void ADC_SOC_CNF();
 extern void AD2LPF(void);
-extern void analog_input_proc( float * analog_referenc);
-extern void analog_input_proc_b( float * referenc);
-extern void analog_out_proc( );
 interrupt void Adc_Isr(void);
 interrupt void wakeint_isr(void);
 extern void VariInit();

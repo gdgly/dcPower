@@ -80,7 +80,7 @@ void initVariFullbridgeCtrl( )
 void initEpwmFullBridge()
 {  
     EPwm1Regs.ETSEL.bit.INTEN = 0;                  // Enable INT
-    MAX_PWM_CNT = (Uint16)( ( F_OSC * DSP28_PLLCR / SWITCHING_FREQ ) * 0.5 * 0.5 * 0.5);
+    MAX_PWM_CNT = (Uint16)( ( F_OSC *0.5 * DSP28_PLLCR / SWITCHING_FREQ ) * 0.5 * 0.5 * 0.5);
 //--- PWM Module1
     EPwm1Regs.TBPRD                 =  MAX_PWM_CNT;         // Set timer period
     EPwm1Regs.TBPHS.half.TBPHS      = 0x0000; // Phase is 0
@@ -121,6 +121,9 @@ void initEpwmFullBridge()
 
 //  AdcRegs.ADCTRL2.bit.EPWM_SOCA_SEQ1 = 1;// Enable SOCA from ePWM to start SEQ1
 //  AdcRegs.ADCTRL3.all = 0x00FE;  // Power up bandgap/reference/ADC circuits
+    EPwm1Regs.ETSEL.bit.INTSEL = ET_CTR_ZERO;   // Select INT on Zero event
+    EPwm1Regs.ETPS.bit.INTPRD = 1;   // Generate interrupt on the 1st event
+    EPwm1Regs.ETCLR.bit.INT = 1;     //
 
     EPwm1Regs.ETSEL.bit.SOCAEN = 1;   // Enable SOC on A group
     EPwm1Regs.ETSEL.bit.SOCASEL = ET_CTR_PRD;//
@@ -170,7 +173,6 @@ int mode3Current_P_I_LoopCtrl( )
 			break;
 		}
 		get_command( & command, & ref_in0);					
-		analog_out_proc( );
 		monitor_proc();
 
 		switch( gMachineState )
@@ -267,7 +269,6 @@ int mode8LoopCtrl( )
 			break;
 		}
 		get_command( & command, & ref_in0);					
-		analog_out_proc( );
 		monitor_proc();
 
 		switch( gMachineState )
@@ -358,7 +359,6 @@ int testFullBridgeLoopCtrl1( )
 			break;
 		}
 		get_command( & command, & ref_in0);					
-		analog_out_proc( );
 		monitor_proc();
 
 		switch( gMachineState )

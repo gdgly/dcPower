@@ -1,6 +1,12 @@
 #ifndef		__VARIABLES_
 #define		__VARIABLES_
 
+#if USE_GRAPH
+extern int graphCount;
+extern int y1_data[GRAPH_NUMBER];
+extern int y2_data[GRAPH_NUMBER];
+#endif
+
 extern char monitOut[61];
 
 extern float nativeI_out;
@@ -14,18 +20,25 @@ extern float ctrlIntegral;
 extern float preIntegral;
 extern float phaseShiftRatio;
 
-extern float Power_out;
 extern int code_run_input_select;
 
-extern int adcI_pri;
-extern int adcI_out;
+extern int adcIpri;
+extern int adcIout;
+extern int adcVout;
+extern int adcVdc;
 
-extern float I_pri;
-extern float I_out;
+extern float nativeIout;
+extern float nativeIpri;
+extern float nativeVout;
+extern float nativeVdc;
+
+extern float Pout;
+extern float Ipri;
+extern float Iout;
+extern float Vout;
 
 extern float OC_Timer;
 extern float ovpTimer;		// 2014.1016
-extern float Vout;
 
 extern float monitor[5];
 extern int debug_count;
@@ -55,8 +68,9 @@ extern int timer0_count;
 extern unsigned int Fault_Code;
 
 extern int init_charge_flag;
-extern float lpfVdcIn[3],lpfVdcOut[3],lpfVdcK[4];
 extern float lpfIoutIn[3], lpfIoutOut[3],lpfIoutK[4];
+extern float lpfVoutIn[3], lpfVoutOut[3],lpfVoutK[4];
+extern float lpfVdcIn[3],  lpfVdcOut[3], lpfVdcK[4];
 
 extern unsigned int Fault_Code;
 extern float * dac_point[200];
@@ -101,7 +115,7 @@ extern char gSciaTxBuf[SCIA_TX_BUF_MAX+1];
 
 extern int gMachineState;
 extern int	gPWMTripCode;
-extern int adc_result[16];
+extern int adc_result[4];
 extern int giAdcVdc	;
 
 extern TRIP_INFO TripInfo;

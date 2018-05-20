@@ -14,9 +14,9 @@
 #define MAIN_POWER_OFF			0			// Vdc == 300.0
 #define CONVERTER_ON			0
 #define USE_UART_A              1
-#define USE_GRAPH				1
 #define TEST_ADC_CENTER			1
 
+#define USE_GRAPH               0
 #define GRAPH_NUMBER			300
 
 #define TYPE_INTEGER			0

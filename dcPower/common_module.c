@@ -86,50 +86,18 @@ int iGetAinCmd(int * piCommand, float * pfReference)
 	* pfReference = 0.0;
 	return iTemp;
 }
-
-void analog_cmd_proc(float * ana_refer)
-{
-
-}
-//------------------------------
-//
-//------------------------------
-
+// 2018.0518 remove analog command proc
 void get_command( int * command, float * ref )
 {
 	int digital_cmd,sci_cmd;
-	float digital_reference,sci_ref,ana_ref;
+	float digital_reference,sci_ref;
 
 	digital_input_proc( & digital_cmd, & digital_reference);
 	serial_com_proc( & sci_cmd, & sci_ref );
-	analog_cmd_proc( & ana_ref);
 
-	code_run_input_select = 1;	// 2014.0827
+	* command = digital_cmd;
+	* ref = digital_reference;
 
-	switch( code_run_input_select )
-	{
-	case 1:
-		* command = digital_cmd;
-		* ref = digital_reference;
-		break;
-	case 2:
-		* command = sci_cmd;
-		* ref = sci_ref;
-		break;
-	case 3:
-	case 8:
-	case 9:
-		* command = digital_cmd;
-		if( digital_cmd == CMD_START ){
-			if( ana_ref < 0.01 )	* command = CMD_STOP;
-			else 					* ref = ana_ref;
-		}
-		break;
-	default:
-		* command = CMD_STOP;
-		* ref = 0.0; 
-		break;
-	}
 	if( sci_cmd != CMD_NULL){
 		if( sci_cmd == CMD_SAVE){
 			* command = sci_cmd ;
