@@ -7,7 +7,12 @@ extern int y1_data[GRAPH_NUMBER];
 extern int y2_data[GRAPH_NUMBER];
 #endif
 
-extern char monitOut[61];
+// extern char monitOut[61];
+
+extern char monitOut1[30];
+extern char monitOut2[30];
+extern char monitOut3[30];
+extern char monitOut4[30];
 
 extern float nativeI_out;
 extern float nativeI_pri;

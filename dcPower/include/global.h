@@ -7,7 +7,10 @@ int y1_data[GRAPH_NUMBER];
 int y2_data[GRAPH_NUMBER];
 #endif
 
-char monitOut[61];
+char monitOut1[30];
+char monitOut2[30];
+char monitOut3[30];
+char monitOut4[30];
 
 float under_volt_set;
 float nativeI_out;
@@ -103,8 +106,8 @@ int gMachineState=0;
 int	gPWMTripCode;
 int adc_result[4]={0};
 int	giAdcVdc	;
-TRIP_INFO TripInfo = {0,0,0,0,0,"2008:07:24  00:01:23"," No Trip Data       "};
-TRIP_INFO TripInfoNow = {0,0,0,0,0,"2008:07:24  00:01:23"," No Trip Data       "};
+TRIP_INFO TripInfo = {0,0,0,0,0," No Trip Data       "};
+TRIP_INFO TripInfoNow = {0,0,0,0,0," No Trip Data       "};
 
 int gTripFlag = 0;
 Uint16	MAX_PWM_CNT;

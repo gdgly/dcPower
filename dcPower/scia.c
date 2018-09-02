@@ -218,7 +218,10 @@ void scia_cmd_proc( int * sci_cmd, float * sci_ref)
          if(addr == 900){    //  monitor state
              check = (int)data;
              monitor_proc();
-             load_scia_tx_mail_box(monitOut);
+             load_scia_tx_mail_box(monitOut1); delay_msecs(10);
+             load_scia_tx_mail_box(monitOut2); delay_msecs(10);
+             load_scia_tx_mail_box(monitOut3); delay_msecs(10);
+             load_scia_tx_mail_box(monitOut4); delay_msecs(10);
              Nop();
              return;
          }
@@ -252,7 +255,6 @@ void scia_cmd_proc( int * sci_cmd, float * sci_ref)
                  load_scia_tx_mail_box(str); delay_msecs(180);
 
                  load_scia_tx_mail_box(TripInfoNow.MSG); delay_msecs(220);
-                 load_scia_tx_mail_box(TripInfoNow.TIME); delay_msecs(180);
 
                  dbtemp = TripInfoNow.VOUT;
                  temp = (int)(floor(dbtemp +0.5));
@@ -285,7 +287,6 @@ void scia_cmd_proc( int * sci_cmd, float * sci_ref)
                  load_scia_tx_mail_box(str); delay_msecs(180);
 
                  load_scia_tx_mail_box(TripData->MSG); delay_msecs(220);
-                 load_scia_tx_mail_box(TripData->TIME); delay_msecs(180);
 
                  dbtemp = TripData->VOUT;
                  temp = (int)(floor(dbtemp +0.5));

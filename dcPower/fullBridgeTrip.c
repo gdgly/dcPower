@@ -220,9 +220,6 @@ void GetTripInfo(int Point,TRIP_INFO * TripData )
 	char str[30]={0};
 	UNION32 u32data;
 
-	strncpy(TripData->MSG ,NULL,41);
-	strncpy(TripData->TIME ,NULL,31);
-
 	I2CA_ReadData(ADDR_24LC32,EPROM_ADDR_TRIP_POINT,&TripDataPoint);
 
 // erased  
@@ -234,7 +231,6 @@ void GetTripInfo(int Point,TRIP_INFO * TripData )
 		TripData->CODE = 0.0;
 		TripData->VDC = 0.0;
 		strncpy(TripData->MSG  ," Invalid Trip Code  ",20);
-		strncpy(TripData->TIME ,"2014:10:16  17:00:00",20);
 		return ;
 	}
 
@@ -275,11 +271,9 @@ void GetTripInfo(int Point,TRIP_INFO * TripData )
 
 	// Time
 	ReadTripString( TripBaseAddr+40,str);
-	strncpy(TripData->TIME,str,20);
 
 	// start Time
 	ReadTripString( TripBaseAddr+60,str);
-	strncpy(TripData->START_TIME,str,20);
 
 	EepromSaveFlag = 0;
 }
@@ -354,10 +348,8 @@ void SaveTripDataToEeprom()
 	strncpy(str,TripInfoNow.MSG,20);
 	WriteTripString( TripBaseAddr+20,str);
 // Time
-	strncpy(str,TripInfoNow.TIME,20);
 	WriteTripString( TripBaseAddr+40,str);
 // start Time
-	strncpy(str,TripInfoNow.START_TIME,20);
 	WriteTripString( TripBaseAddr+60,str);
 
 	EepromSaveFlag = 0;

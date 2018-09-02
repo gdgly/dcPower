@@ -33,42 +33,64 @@ void monitorPrint( char * str, float argIn)
 
 void monitor_proc()     // need_edit
 {
-    // Uint32 RunTimeMsec=0 ;
-    // static unsigned long StartTimeMsec = 0 ;
-    int i,j,k,temp;
-    char str[12]={0};
+    int temp1,temp2,temp3;
+
+    temp1 = (int)( floor (Iout + 0.5));
+    temp2 = (int)(Vout);
+    temp3 = ((int)(Vout * 10.0)) % 10;
+    snprintf( monitOut2,25,"\x02 1Io =%dA : Vo = %2d.%1dV\x03\r\n",temp1,temp2,temp3);
+
+    temp1 = (int)(Pout/1000);
+    temp2 = ((int)(Pout / 100.0)) % 10;
+    temp3 = (int)( floor (Vdc + 0.5));
+    snprintf( monitOut3,25,"\x02 2Po =%03d.%1dkW : Vdc= %03dV\x03\r\n",temp1,temp2,temp3);
+
+    strncpy(monitOut4,"\x02 3Dong Ho P.E.     \x03\r\n",25);
 
     switch(gMachineState){
-        case STATE_POWER_ON:    strncpy(MonitorMsg,"[POWON]",7); break;
-        case STATE_READY:       strncpy(MonitorMsg,"[READY]",7); break;
-        case STATE_RUN:         strncpy(MonitorMsg,"[RUN ] ",7); break;
-        case STATE_INIT_RUN:    strncpy(MonitorMsg,"[INIT] ",7); break;
-        case STATE_GO_STOP:     strncpy(MonitorMsg,"[GOSTP]",7); break;
-        case STATE_TRIP:
-            strncpy(MonitorMsg,"[TRIP] ",7);
-            temp = TripInfoNow.CODE;
-            monitOut[32] = ( temp / 100 ) + '0';
-            monitOut[33] = ( (temp % 100)/ 10 ) + '0';
-            monitOut[34] = ( temp % 10 ) + '0';
-            monitOut[35] = ',';
-            strncpy(monitOut + 36,TripInfoNow.MSG,20);
+        case STATE_POWER_ON:
+            strncpy(monitOut1,"\x02 0[POWER ON] wait ...\x03\r\n",25);
             break;
 
-        default:                strncpy(MonitorMsg,"[SYERR]",7); break;
-    }
+        case STATE_READY:
+            strncpy(monitOut1,"\x02 0[READY]  DongHoP.E.\x03\r\n",25);
+            break;
 
-    strncpy(monitOut,MonitorMsg,7);
-    monitor[0] = Iout;
-    monitor[1] = Vout;
-    monitor[2] = Pout/1000.0;
-    monitor[3] = Vdc;
-    monitOut[7]=',';
-    for( i = 0; i < 4 ; i ++ ){
-        monitorPrint( str, monitor[i]);
-        k = 6 * i + 8 ;
-        for( j = 0 ; j < 6 ; j++) monitOut[j+k] = str[j];
+        case STATE_TRIP:
+            snprintf( monitOut1,29,"\x02 0[TRIP %03d] DongHo P.E.\x03\r\n",TripInfoNow.CODE);
+
+            temp1 = (int)( floor (TripInfoNow.CURRENT+0.5));
+            temp2 = (int)(TripInfoNow.VOUT);
+            temp3 = ((int)(TripInfoNow.VOUT * 10.0)) % 10;
+            snprintf( monitOut2,25,"\x02 1Io =%dA : Vo = %2d.%1dV \x03\r\n",temp1,temp2,temp3);
+
+            temp1 = (int)(TripInfoNow.DATA);
+
+            if( (temp1 > 999 )||(temp1 < 0)) temp1 = 999;
+
+            temp2 = (int)( floor (TripInfoNow.VDC + 0.5));
+            if( (temp2 > 999 ) || ( temp2 < 0)) temp2 = 999;
+
+            snprintf( monitOut3,25,"\x02 2eDATA=%03d:eVdc=%03dV\x03\r\n",temp1,temp2);
+
+            snprintf( monitOut4,25,"\x02 3%s \x03\r\n",TripInfoNow.MSG);
+            break;
+
+        case STATE_INIT_RUN:
+            strncpy(monitOut1,"\x02 0[INIT    ] DongHo P.E.\x03\r\n",25);
+            break;
+
+        case STATE_GO_STOP:
+            strncpy(monitOut1,"\x02 0[GO READY] DongHo P.E.\x03\r\n",25);
+            break;
+        case STATE_RUN:
+            strncpy(monitOut1,"\x02 0[RUN     ] DongHo P.E.\x03\r\n",25);
+            break;
+
+        default:
+            strncpy(monitOut1,"\x02 0[SYERR ] DongHo P.E.\x03\r\n",25);
+            break;
     }
-    monitOut[56] = 0;
 }
 
 void GetInputMark(char * str)

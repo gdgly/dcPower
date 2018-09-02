@@ -30,9 +30,7 @@ struct TRIP_INFO_DEFINE {
 	float	VDC;				// 6
 	float	VOUT;				// 7
 	float	DATA;				// 4
-	char 	MSG[20];			// 2
-	char 	TIME[20];			// 3
-	char 	START_TIME[20];		// 3
+	char 	MSG[21];			// 2
 };
 typedef struct TRIP_INFO_DEFINE TRIP_INFO;
 

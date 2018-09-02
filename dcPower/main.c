@@ -27,7 +27,7 @@ void main( void )
 {
     // UNION32 data;
     // int i;
-    int trip_code,loop_ctrl,temp;
+    int trip_code,loop_ctrl,temp,count;
 	int cmd;
 	float ref_in0;
 
@@ -94,7 +94,39 @@ void main( void )
 
     ADC_SOC_CNF();
     strncpy(MonitorMsg,"POWER_ON",20);
+/*
+    count =0 ;
+    for ( ; ; ){
+
+        if( count < 997 ) count ++;
+        else              count =0;
+
+        snprintf( gStr1,25,"\x02 0: Count = %3d \x03\r\n",count);
+        load_sci_tx_mail_box(gStr1); delay_msecs(10);
+
+        count ++;
+        snprintf( gStr1,25,"\x02 1: Count = %3d \x03\r\n",count);
+        load_sci_tx_mail_box(gStr1); delay_msecs(10);
+
+        count ++;
+        snprintf( gStr1,25,"\x02 2: count = %3d \x03\r\n",count);
+        load_sci_tx_mail_box(gStr1); delay_msecs(10);
+
+        count ++;
+        snprintf( gStr1,25,"\x02 3: count = %3d \x03\r\n",count);
+        load_sci_tx_mail_box(gStr1); delay_msecs(10);
+
+        delay_msecs(500);
+    }
+*/
     gPWMTripCode = 0;		//
+
+    TripInfoNow.CODE    = 0;
+    TripInfoNow.DATA    = 0;
+    strncpy( TripInfoNow.MSG,"POWER ON PROC",20) ;
+    TripInfoNow.CURRENT = Iout = 0.0;
+    TripInfoNow.VDC     = 0.0;
+    TripInfoNow.VOUT    = Vout = 0.0;
 
     temp = load_code2ram();
     if( temp ) tripProc();
