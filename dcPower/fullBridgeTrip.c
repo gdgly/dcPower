@@ -19,11 +19,11 @@ void trip_recording(int trip_code,float trip_data,char * st)
 	TripInfoNow.CURRENT	= Iout;
 	TripInfoNow.VDC 	= Vdc;
 	TripInfoNow.VOUT 	= Vout;
-//	TripInfoNow.HZ 		= Freq_out;
 }	
 
 int CheckOverCurrent( )
 {
+    return 0;
 //--- OC I_pri check
 	if(( protect_reg.bit.OVER_I_ADC)&&( adcIpri > 4000)){
 		trip_recording( ERR_OC_I_PRI_ADC_P, (float)(adcIpri),"adcIpri over");
@@ -59,8 +59,7 @@ int CheckOverVolt( )
 	static int OverVoltCount = 0;
 
 	if( protect_reg.bit.OVER_VOLT == 0 ) return 0;
-
-	if (Vdc > over_volt_set ) OverVoltCount++;
+	if (Vdc > 700.0 ) OverVoltCount++;
 	else if( OverVoltCount > 0) OverVoltCount --;
 
 	if (OverVoltCount > 5 )
@@ -97,7 +96,7 @@ int CheckUndeVolt( )
 
 	if( gMachineState == STATE_POWER_ON ) return 0;	// 2014.0901 by soongil
 
-	if (Vdc < code_under_volt_set) 	UnderVoltCount++;
+	if (Vdc < 400.0 ) 	UnderVoltCount++;
 	else if( UnderVoltCount > 0) 	UnderVoltCount--;
 
 	if (UnderVoltCount > 5 )
@@ -145,13 +144,6 @@ int tripCheck()
 	if( ( TripCode = CheckOVP( )       ) != 0 ) return TripCode ;
 	return TripCode;
 }
-
-//-----------------------------------
-// Ʈ�� �߻� �����̸� On �ϰ� 
-// Reset�� ��ٸ���. 
-//-----------------------------------
-// Trip Message�� Ʈ���� �߻��� ������ ������ �Ѵ�. 
-//
 
 void tripProc( )
 {

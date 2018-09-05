@@ -64,15 +64,22 @@ void load_sci_tx_mail_box( char * str)
 	load_scia_tx_mail_box( str);
 }
 
+//--- if no command from sci for 5 sec
+//--- then reset serial comm port
+
 void serial_com_proc( int * sci_cmd, float * sci_ref)
 {
+    static unsigned long setTimeOut = 0;
 
 	if (scia_rx_msg_flag == 1 ){
 		scia_cmd_proc( sci_cmd, sci_ref);
 		scia_rx_msg_flag = 0;
-		return;
-	}
-	else{
+		setTimeOut = ulGetNow_mSec();
+	} else {
+	    if( ulGetTime_mSec(setTimeOut) > 5000 ){
+	        setTimeOut = ulGetNow_mSec();
+	        scia_fifo_init();
+	    }
 		* sci_cmd = CMD_NULL;
 		* sci_ref = 0.0;
 		return;

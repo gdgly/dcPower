@@ -54,7 +54,7 @@ void ADC_SOC_CNF( )
 #define IOUT_OFFSET     0.0
 #define IPRI_OFFSET     0.0
 
-__interrupt void adcIsr(void)
+interrupt void adcIsr(void)
 {
 //    TRIP_OUT_ON;
     //    int temp;
@@ -78,10 +78,11 @@ __interrupt void adcIsr(void)
 
     lpfVdcIn[0] = nativeVdc;
     lpf2nd( lpfVdcIn, lpfVdcOut, lpfVdcK);
-    Vdc = lpfVdcOut[0];
 
     if( gMachineState == STATE_READY){ Iout = 0.0; Vout = 0.0;}
-    if( code_set_Vdc_on ) Vdc = code_Vdc_set_value; // 2012.11.20
+
+    if( code_set_Vdc_on > 0.5 ) Vdc = code_Vdc_set_value; // 2012.11.20
+    else                        Vdc = lpfVdcOut[0];
 
     Pout = Vout * Iout ;
 

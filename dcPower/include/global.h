@@ -124,7 +124,6 @@ float codeVdcOffset;
 float codeVdcSpan;
 float codeVoutOffset;
 float codeVoutSpan;
-float codeSwitFreq;
 
 float code_Ki;
 float code_Kp;
@@ -135,7 +134,6 @@ float codeVdcOffset;
 float codeVdcSpan;
 float codeVoutOffset;
 float codeVoutSpan;
-float codeSwitFreq;
 
 float code_adc_vdc_low;
 float code_adc_vdc_high;
@@ -154,9 +152,6 @@ int code_protect_Iadc_off = 0;
 int code_protect_over_I_off = 0;
 int code_protect_IGBT_off =0;
 int code_protect_ex_trip_off=0;
-
-float code_under_volt_set = 200.0;
-float over_volt_set = 700.0;
 
 //============================================
 //   CODE variable 

@@ -142,7 +142,7 @@ void scia_cmd_proc( int * sci_cmd, float * sci_ref)
 {
 	float data,dbtemp;
     int addr,check,temp;
-    char str[30]={0};
+    char str[41]={0};
 
     TRIP_INFO * TripData;
 
@@ -152,9 +152,9 @@ void scia_cmd_proc( int * sci_cmd, float * sci_ref)
 	* sci_cmd = CMD_NULL;
 	* sci_ref = 0.0;
 
-	if( scia_rx_msg_flag == 0) return;
+//	if( scia_rx_msg_flag == 0) return;
 
-	scia_rx_msg_flag = 0;
+//	scia_rx_msg_flag = 0;
 
     strncpy( scia_rx_msg_box,msg_box,16);
 
@@ -171,23 +171,23 @@ void scia_cmd_proc( int * sci_cmd, float * sci_ref)
              if(check == 10){
                  * sci_cmd = CMD_START;
                  * sci_ref = 0.1;           //code_btn_start_ref;
-                 load_scia_tx_mail_box("UART CMD_START");
+                 load_scia_tx_mail_box("\x02UART CMD_START\x03\r\n");
              }
              else if( check == 20 ){
                  * sci_cmd = CMD_STOP;  * sci_ref = 0.0;
-                 load_scia_tx_mail_box("UART CMD_STOP");
+                 load_scia_tx_mail_box("\x02UART CMD_STOP\x03\r\n");
              }
              else if( check == 30 ){
                  * sci_cmd = CMD_RESET;  * sci_ref = 0.0;
-                 load_scia_tx_mail_box("UART CMD_RESET");
+                 load_scia_tx_mail_box("\x02UART CMD_RESET\x03\r\n");
              }
              else if( data == 40 ){
                  * sci_cmd = CMD_SAVE;  * sci_ref = 0.0;
-                 load_scia_tx_mail_box("UART CMD_SAVE");
+                 load_scia_tx_mail_box("\x02UART CMD_SAVE\x03\r\n");
              }
              else if( data == 50 ){
                    * sci_cmd = CMD_READ_ALL;  * sci_ref = 0.0;
-                   load_scia_tx_mail_box("UART CMD_READ_ALL");
+                   load_scia_tx_mail_box("\x02UART CMD_READ_ALL\0x03\r\n");
             }
             else if( data == 80 ){
                    * sci_cmd = CMD_NULL;  * sci_ref = 0.0;
@@ -195,13 +195,13 @@ void scia_cmd_proc( int * sci_cmd, float * sci_ref)
             }
             else if( data == 90 ){
                    * sci_cmd = CMD_NULL;  * sci_ref = 0.0;
-                   load_scia_tx_mail_box("EEPROM init Start");
+                   load_scia_tx_mail_box("\x02 EEPROM init Start\x03\r\n");
                    check = init_eprom_data();      // 0이 아니면 address value
-                   if( check != 0) load_scia_tx_mail_box("EEPROM init Fail");
-                   else        load_scia_tx_mail_box("EEPROM init OK");
+                   if( check != 0) load_scia_tx_mail_box("\0x02 3EEPROM init Fail\x03\r\n");
+                   else        load_scia_tx_mail_box("\x02 3EEPROM init OK\x03\r\n");
             }
             else{
-                 load_scia_tx_mail_box("Illegal CMD data");
+                 load_scia_tx_mail_box("\x02 3Illegal CMD data\x03\r\n");
             }
          }
          else{
@@ -228,8 +228,8 @@ void scia_cmd_proc( int * sci_cmd, float * sci_ref)
          else if(addr == 901){    //  monitor state
              check = (int)data;
              if(check==0){
-                 * sci_cmd = CMD_READ_ALL;  * sci_ref = 0.0;
-                 load_scia_tx_mail_box("ok! read code all");
+                 readAllCodes();
+                 load_scia_tx_mail_box("\x02ok! read code all\x03\r\n");
              }
              return;
          }
@@ -345,40 +345,15 @@ void scia_cmd_proc( int * sci_cmd, float * sci_ref)
          }
 
          check = get_code_information( addr, CMD_READ_DATA , & code_inform);
-
          if( check == 0 ){
-             check = (int)data;
-
-             switch(check)
-             {
-             case 0:
-                 snprintf( str,10,"CODE=%4d:",addr); load_scia_tx_mail_box(str);
-                 snprintf( str,20,"Data=%.3e:",code_inform.code_value);load_scia_tx_mail_box(str);
-                 load_scia_tx_mail_box(code_inform.disp);
-                 load_scia_tx_mail_box("\r\n");delay_msecs(10);
-                 break;
-             case 1:
-                 snprintf( str,19,"CODE=%4d",addr);
-                 load_scia_tx_mail_box(str);
-                  delay_msecs(10);
-                 break;
-             case 2:
-                 load_scia_tx_mail_box(code_inform.disp);delay_msecs(10);
-                 break;
-             case 3:
-                 snprintf( str,20,"Data =%10.3e",code_inform.code_value);
-                 load_scia_tx_mail_box(str); delay_msecs(10);
-                 break;
-             default:
-                 snprintf( str,19,"CODE=%4d/t",addr); load_scia_tx_mail_box(str);
-                 snprintf( str,20,"Data =%.3e/t",code_inform.code_value);load_scia_tx_mail_box(str);
-                 load_scia_tx_mail_box(code_inform.disp);
-                 load_scia_tx_mail_box(" \r\n");delay_msecs(10);
-                 break;
-             }
-         }
-         else{
-             load_scia_tx_mail_box("Error Invalid Address");delay_msecs(10);
+             sprintf( str,"\x02 1%s \x03\r\n",code_inform.disp);
+             load_scia_tx_mail_box(str); delay_msecs(10);
+             sprintf( str,"\x02 2CODE=%3d \x03\r\n",addr);
+             load_scia_tx_mail_box(str); delay_msecs(10);
+             sprintf( str,"\x02 3DATA=%.3e \x03\r\n",code_inform.code_value);
+             load_scia_tx_mail_box(str); delay_msecs(10);
+         } else{
+             load_scia_tx_mail_box("\x02Error Invalid Address\x03\r\n");delay_msecs(10);
          }
          return;
      }

@@ -9,6 +9,20 @@
 
 double phase_ratio=0.0;
 
+/*
+interrupt void MainPWM(void){
+
+    EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 1 ;
+    EPwm2Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 1;
+
+    EPwm1Regs.ETCLR.bit.INT = 1;
+    PieCtrlRegs.PIEACK.all = PIEACK_GROUP3;
+
+//  MAIN_CHARGE_OFF;
+    return;
+}
+*/
+
 interrupt void MainPWM(void)
 {
 //	unsigned int temp;
@@ -61,25 +75,12 @@ interrupt void MainPWM(void)
 				EPwm2Regs.TBPHS.half.TBPHS = (Uint16)(MAX_PWM_CNT * codePwmPhaseInit * 0.5)  ;
 				invt_PWM_Port_Set_flag = 1;
 			}
-			else if( code_ctrl_mode == 9 ){
-			    if( test_pulse_count < codeSetPulseNumber){
-					EPwm2Regs.TBPHS.half.TBPHS = (Uint16)( MAX_PWM_CNT * codePwmPhaseInit * 0.5 );
-					test_pulse_count++;
-				}
-				else{ 
-					EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 1;
-					EPwm2Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 1;
-					gMachineState = STATE_READY;
-					epwmFullBridgeDisable();
-				}
-			}
 			else{
 				EPwm2Regs.TBPHS.half.TBPHS = (Uint16)( MAX_PWM_CNT * codePwmPhaseInit * 0.5 );
 			}
 			break;
 
 		case STATE_RUN:
-//		case STATE_BREAK_OFF:
 			EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT>>1;
 			EPwm2Regs.CMPA.half.CMPA = MAX_PWM_CNT>>1;
 
@@ -100,13 +101,23 @@ interrupt void MainPWM(void)
 
 				EPwm2Regs.TBPHS.half.TBPHS = (Uint16)( MAX_PWM_CNT * phaseShiftRatio * 0.5 );
 
-			}
-			else if( code_ctrl_mode == 8 ){ // mode8LoopCtrl mode
+			} else if( code_ctrl_mode == 8 ){ // mode8LoopCtrl mode
 				EPwm2Regs.TBPHS.half.TBPHS = (Uint16)( MAX_PWM_CNT * reference_out * 0.5 );
-			}
-			else if( code_ctrl_mode == 2 ){ // mode2LoopCtrl mode
+			} else if( code_ctrl_mode == 2 ){ // mode2LoopCtrl mode
 				EPwm2Regs.TBPHS.half.TBPHS =(Uint16)( MAX_PWM_CNT * code_testPwmPhase * 0.5 );
-			}
+			} else if( code_ctrl_mode == 9 ){
+                if(( codeSetPulseNumber <  1.0 ) && ( test_pulse_count < codeSetPulseNumber)){
+                    EPwm2Regs.TBPHS.half.TBPHS = (Uint16)( MAX_PWM_CNT * codePwmPhaseInit * 0.5 );
+                } else if( test_pulse_count < codeSetPulseNumber ){
+                    EPwm2Regs.TBPHS.half.TBPHS = (Uint16)( MAX_PWM_CNT * codePwmPhaseInit * 0.5 );
+                    test_pulse_count++;
+               } else {
+                    EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 1;
+                    EPwm2Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 1;
+                    gMachineState = STATE_READY;
+                    epwmFullBridgeDisable();
+               }
+            }
 			else{
 				EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 1;
 				EPwm2Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 1;
@@ -142,7 +153,7 @@ interrupt void MainPWM(void)
 	}
 
 #if USE_GRAPH
-	if(graphCount<GRAPH_NUMBER){
+	if(graphCount<( GRAPH_NUMBER - 1)){
         y1_data[graphCount] = adc_result[2];
         y2_data[graphCount] = adc_result[3];
         // y1_data[graphCount] = adcIout;
@@ -163,7 +174,6 @@ _PWM_OUT_END:
 //	MAIN_CHARGE_OFF;
 	return;
 }
-
 // end of switching_irq.c 
 
 

@@ -36,7 +36,7 @@ void initVariFullbridgeCtrl( )
 	float x1,x2,y1,y2;
     float phaseScale, phaseOffset;
 
-	Ts = 1.0 / codeSwitFreq;
+	Ts = 1.0 / SWITCHING_FREQ;  //
 
 	// for Vdc calc
 	x1 = code_adc_vdc_low;		y1 = code_Vdc_calc_low;
@@ -99,7 +99,8 @@ void initEpwmFullBridge()
     EPwm1Regs.DBRED                 = DEAD_TIME_COUNT; // debug set to 4usec
     EPwm1Regs.DBFED                 = DEAD_TIME_COUNT;
     EPwm1Regs.CMPA.half.CMPA        = MAX_PWM_CNT;
-//--- Set PWM2
+
+    //--- Set PWM2
     EPwm2Regs.TBPRD                 =  MAX_PWM_CNT;             // Set timer period
     EPwm2Regs.TBPHS.half.TBPHS      = 0x0000;            // Phase is 0
     EPwm2Regs.TBCTL.bit.CTRMODE     = TB_COUNT_UPDOWN;      // Count up
@@ -407,7 +408,8 @@ int testFullBridgeLoopCtrl1( )
 	} // end of while
 	return trip_code;
 }		
-	
+
+// codeSetPulseNumber == 0 then pulse out conitued
 
 int pwmPulseTestLoopCtrl( )
 {
@@ -423,24 +425,22 @@ int pwmPulseTestLoopCtrl( )
 
 	strncpy(MonitorMsg,"INIT_RUN",20);
 
-	LoopCtrl = 1;	gMachineState = STATE_INIT_RUN;		
+	LoopCtrl = 1;
+
+	gMachineState = STATE_RUN;
 
 	test_pulse_count = 0;
 
-//	snprintf( gStr1,20,"Start[%4d]Pulse",codeSetPulseNumber);	load_sci_tx_mail_box(gStr1);
-//	epwmFullBridgeEnable();
 	while(LoopCtrl == 1)
 	{
 		trip_code = tripCheck();
 		if( trip_code !=0 ){
+            gMachineState = STATE_TRIP;
 			LoopCtrl = 0;
-		}
-		else if( test_pulse_count >= codeSetPulseNumber){
+		} else if( ( codeSetPulseNumber > 0.9 ) && ( test_pulse_count >= codeSetPulseNumber)) {
 			LoopCtrl = 0;
-		}
-		else{
-			monitor_proc();
-			get_command( & command, & ref_in0);	// Command�� �Է� ���� 
+		} else {
+			get_command( & command, & ref_in0);	// Command
 			if( command == CMD_STOP){
 				gMachineState = STATE_READY;
 				LoopCtrl = 0;
@@ -449,8 +449,7 @@ int pwmPulseTestLoopCtrl( )
 	}
 
 	epwmFullBridgeDisable();
-
-//	snprintf( gStr1,20,"End [%4d]Pulse",codeSetPulseNumber);	load_sci_tx_mail_box(gStr1);
+	if( trip_code) return trip_code;
 
 	LoopCtrl=1;
 	while(LoopCtrl == 1)

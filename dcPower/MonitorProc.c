@@ -33,19 +33,21 @@ void monitorPrint( char * str, float argIn)
 
 void monitor_proc()     // need_edit
 {
-    int temp1,temp2,temp3;
+    int temp1,temp2,temp3,temp4;
+    static int count = 0;
 
-    temp1 = (int)( floor (Iout + 0.5));
-    temp2 = (int)(Vout);
-    temp3 = ((int)(Vout * 10.0)) % 10;
-    snprintf( monitOut2,25,"\x02 1Io =%dA : Vo = %2d.%1dV\x03\r\n",temp1,temp2,temp3);
+    count = (count < 998 ) ? count + 1 : 0;
 
-    temp1 = (int)(Pout/1000);
-    temp2 = ((int)(Pout / 100.0)) % 10;
-    temp3 = (int)( floor (Vdc + 0.5));
-    snprintf( monitOut3,25,"\x02 2Po =%03d.%1dkW : Vdc= %03dV\x03\r\n",temp1,temp2,temp3);
+    temp1 = ((int)(Vout * 10.0)) % 10;
+    temp2 = (int)( floor (Iout + 0.5));
 
-    strncpy(monitOut4,"\x02 3Dong Ho P.E.     \x03\r\n",25);
+    temp3 = (int)(Pout/1000);
+    temp4 = ((int)(Pout / 100.0)) % 10;
+
+    sprintf( monitOut2,"\x02 1Vo=%2d.%1dV:Po=%2d.%1dkW\x03\r\n",temp1,temp2,temp3,temp4);
+    strcpy( monitOut3,"\x02 2                    \x03\r\n");
+    sprintf( monitOut4,"\x02 3                 %3d\x03\r\n",count);
+
 
     switch(gMachineState){
         case STATE_POWER_ON:
@@ -53,27 +55,30 @@ void monitor_proc()     // need_edit
             break;
 
         case STATE_READY:
-            strncpy(monitOut1,"\x02 0[READY]  DongHoP.E.\x03\r\n",25);
+
+            temp1 = (int)(floor(Iout+0.5));
+            sprintf(monitOut1,"\x02 0[READY] Io=%3d[A]  \x03\r\n",temp1);
             break;
 
         case STATE_TRIP:
-            snprintf( monitOut1,29,"\x02 0[TRIP %03d] DongHo P.E.\x03\r\n",TripInfoNow.CODE);
+
+            temp1 = (int)(floor(Iout+0.5));
+            sprintf( monitOut1,"\x02 0[TRIP %03d] Io=%3d[A]\x03\r\n",TripInfoNow.CODE,temp1);
 
             temp1 = (int)( floor (TripInfoNow.CURRENT+0.5));
             temp2 = (int)(TripInfoNow.VOUT);
             temp3 = ((int)(TripInfoNow.VOUT * 10.0)) % 10;
-            snprintf( monitOut2,25,"\x02 1Io =%dA : Vo = %2d.%1dV \x03\r\n",temp1,temp2,temp3);
+            sprintf( monitOut2,"\x02 1AT =%03dA : AT =%02d.%1dV \x03\r\n",temp1,temp2,temp3);
 
             temp1 = (int)(TripInfoNow.DATA);
-
             if( (temp1 > 999 )||(temp1 < 0)) temp1 = 999;
 
             temp2 = (int)( floor (TripInfoNow.VDC + 0.5));
             if( (temp2 > 999 ) || ( temp2 < 0)) temp2 = 999;
 
-            snprintf( monitOut3,25,"\x02 2eDATA=%03d:eVdc=%03dV\x03\r\n",temp1,temp2);
+            sprintf( monitOut3,"\x02 2TRIP=%03d: AT=%03dV\x03\r\n",temp1,temp2);
 
-            snprintf( monitOut4,25,"\x02 3%s \x03\r\n",TripInfoNow.MSG);
+            sprintf( monitOut4,"\x02 3Er:%s \x03\r\n",TripInfoNow.MSG);
             break;
 
         case STATE_INIT_RUN:
@@ -81,10 +86,13 @@ void monitor_proc()     // need_edit
             break;
 
         case STATE_GO_STOP:
-            strncpy(monitOut1,"\x02 0[GO READY] DongHo P.E.\x03\r\n",25);
+            temp1 = (int)(floor(Iout+0.5));
+            sprintf(monitOut1,"\x02 0[GO STOP] Io:%3d[A]\x03\r\n",temp1);
             break;
         case STATE_RUN:
-            strncpy(monitOut1,"\x02 0[RUN     ] DongHo P.E.\x03\r\n",25);
+
+            temp1 = (int)(floor(Iout+0.5));
+            sprintf(monitOut1,"\x02 0[RUN] Io:%3d[A]\x03\r\n",temp1);
             break;
 
         default:

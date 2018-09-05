@@ -238,7 +238,6 @@ int SaveDataProc(int addr, float data)
             EepromSaveFlag = 1;
             write_code_2_eeprom(EPROM_ADDR_CHECKSUM, u32data);
             EepromSaveFlag = 0;
-
             load_sci_tx_mail_box("OK write success") ;
         }
         else{

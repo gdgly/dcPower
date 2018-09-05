@@ -79,7 +79,6 @@ void main( void )
 	PieCtrlRegs.PIEIER1.bit.INTx7 = 1;	// Timer0 irq
     PieCtrlRegs.PIEIER1.bit.INTx1 = 1; // Enable INT 1.1 in the PIE ADCINT1
     PieCtrlRegs.PIEIER3.bit.INTx1 = 1;   //
-
     PieCtrlRegs.PIECTRL.bit.ENPIE = 1;   // Enable the PIE block
 
     IER |= M_INT1;		// Enable CPU INT1 which is connected to CPU-Timer 0:
@@ -94,31 +93,7 @@ void main( void )
 
     ADC_SOC_CNF();
     strncpy(MonitorMsg,"POWER_ON",20);
-/*
-    count =0 ;
-    for ( ; ; ){
 
-        if( count < 997 ) count ++;
-        else              count =0;
-
-        snprintf( gStr1,25,"\x02 0: Count = %3d \x03\r\n",count);
-        load_sci_tx_mail_box(gStr1); delay_msecs(10);
-
-        count ++;
-        snprintf( gStr1,25,"\x02 1: Count = %3d \x03\r\n",count);
-        load_sci_tx_mail_box(gStr1); delay_msecs(10);
-
-        count ++;
-        snprintf( gStr1,25,"\x02 2: count = %3d \x03\r\n",count);
-        load_sci_tx_mail_box(gStr1); delay_msecs(10);
-
-        count ++;
-        snprintf( gStr1,25,"\x02 3: count = %3d \x03\r\n",count);
-        load_sci_tx_mail_box(gStr1); delay_msecs(10);
-
-        delay_msecs(500);
-    }
-*/
     gPWMTripCode = 0;		//
 
     TripInfoNow.CODE    = 0;
@@ -127,6 +102,8 @@ void main( void )
     TripInfoNow.CURRENT = Iout = 0.0;
     TripInfoNow.VDC     = 0.0;
     TripInfoNow.VOUT    = Vout = 0.0;
+
+    // init_eprom_data();
 
     temp = load_code2ram();
     if( temp ) tripProc();
@@ -142,7 +119,7 @@ void main( void )
 	EPwm1Regs.ETSEL.bit.INTEN = 1;    		            // Enable INT
 	IER |= M_INT3;      // debug for PWM
 
-	gfRunTime = 0.0; 
+	gfRunTime = 0.0;
 
     delay_msecs(500);
     temp = (int)(floor(codeProtectOff+0.5));
@@ -197,22 +174,29 @@ void main( void )
 	temp = 0;
 
 	GATE_DRIVER_ENABLE;
+
 	for( ; ; )
 	{
 		if( gPWMTripCode !=0 )	tripProc();
 		gPWMTripCode = tripCheck();
 		if( gPWMTripCode !=0 )	tripProc();
 
-        monitor_proc();
 		get_command( & cmd, & ref_in0);
-		if(cmd == CMD_READ_ALL )    readAllCodes();
+
 		if(cmd == CMD_START){
 		    temp = (int)(floor(code_ctrl_mode+0.5));
-		    switch(temp)
-		    {
-		    case 3: trip_code = mode3Current_P_I_LoopCtrl();break;
-		    case 8: trip_code = mode8LoopCtrl();break;
-		    case 9: pwmPulseTestLoopCtrl();break;
+		    switch(temp){
+		        case 3: trip_code = mode3Current_P_I_LoopCtrl();break;
+		        case 8: trip_code = mode8LoopCtrl();break;
+                case 9: pwmPulseTestLoopCtrl();break;
+                case 2: pwmPulseTestLoopCtrl();break;
+		        default:
+		            trip_code = 0;
+                    strncpy(gStr1,"set code 10 ctrl mode",20);
+                    load_sci_tx_mail_box(gStr1); delay_msecs(500);
+                    strncpy(gStr1," 3:P_I,8:with,9:pulse",20);delay_msecs(100);
+                    load_sci_tx_mail_box(gStr1); delay_msecs(500);
+		            break;
 		    }
 			if( trip_code !=0 )	tripProc();
 		}

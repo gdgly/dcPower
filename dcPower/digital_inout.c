@@ -17,8 +17,13 @@ void input_ext_fault_a_proc()
 void digital_input_proc(int * cmd, float * ref )
 {
 	if( RUN_INPUT == 0 ){
-	 	* cmd = CMD_START; //FWD LOW
-		* ref = 1.0;
+	    delay_msecs(10);
+	    if( RUN_INPUT == 0 ){
+	        * cmd = CMD_START; //FWD LOW
+	        * ref = 1.0;
+	    } else {
+	        * cmd = CMD_STOP; * ref = 0.0;
+	    }
 	}
 	else { * cmd = CMD_STOP; * ref = 0.0;}
 }

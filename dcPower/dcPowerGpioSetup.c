@@ -84,7 +84,8 @@ void InitGpio(void)
     GpioDataRegs.GPACLEAR.bit.GPIO11= 1; // output clear
     GpioCtrlRegs.GPAMUX1.bit.GPIO11 = 0; //--- relayTripOut
     GpioCtrlRegs.GPADIR.bit.GPIO11 = 1;  // GPIO11 = output
-//--- gpio12 startInput
+
+    //--- gpio12 startInput
     GpioCtrlRegs.GPAPUD.bit.GPIO12 = 0;   // Enable pullup on GPIO12
     GpioCtrlRegs.GPAQSEL1.bit.GPIO12 = 3; // asynch input
     GpioCtrlRegs.GPAMUX1.bit.GPIO12 = 0;  //--- startInput

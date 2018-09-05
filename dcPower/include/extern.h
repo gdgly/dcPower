@@ -154,10 +154,6 @@ extern float codeVdcOffset;         // 410
 extern float codeVdcSpan;               // 411
 extern float codeVoutOffset;            // 412
 extern float codeVoutSpan;          // 413
-extern float codeSwitFreq;              // 500
-
-extern float code_under_volt_set;
-extern float over_volt_set;
 //============================================
 //   CODE variable 
 //============================================
@@ -180,8 +176,6 @@ extern float code_protect_inhibit_on;   // 14
 extern float rDeadTime;			    // 20
 extern float allDeadTime;			// 21
 
-extern float over_volt_set;			// 204
-extern float code_under_volt_set;		// 205
 extern float Is_Max_Coeff;				// 206
 extern float code_OC_time;				// 207
 
