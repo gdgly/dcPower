@@ -39,16 +39,31 @@ void InitGpio(void)
 {
     EALLOW;
 //--- pwm 0, 1, 2, 3
-    GpioCtrlRegs.GPAPUD.bit.GPIO0 = 0;   // Enable pullup on GPIO0
-    GpioCtrlRegs.GPAPUD.bit.GPIO1 = 0;   // Enable pullup on GPIO1
-    GpioCtrlRegs.GPAPUD.bit.GPIO2 = 0;   // Enable pullup on GPIO2
-    GpioCtrlRegs.GPAPUD.bit.GPIO3 = 0;   // Enable pullup on GPIO3
-    GpioCtrlRegs.GPAMUX1.bit.GPIO0 = 1;  // GPIO0 = PWM1A
-    GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 1;  // GPIO1 = PWM1B
-    GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 1;  // GPIO2 = PWM2A
-    GpioCtrlRegs.GPAMUX1.bit.GPIO3 = 1;  // GPIO3 = PWM2B
+    //    GpioCtrlRegs.GPAPUD.bit.GPIO0 = 0;   // Enable pullup on GPIO0
+    //    GpioCtrlRegs.GPAPUD.bit.GPIO1 = 0;   // Enable pullup on GPIO1
+    //    GpioCtrlRegs.GPAPUD.bit.GPIO2 = 0;   // Enable pullup on GPIO2
+    //    GpioCtrlRegs.GPAPUD.bit.GPIO3 = 0;   // Enable pullup on GPIO3
+    //    GpioCtrlRegs.GPAMUX1.bit.GPIO0 = 1;  // GPIO0 = PWM1A
+    //    GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 1;  // GPIO1 = PWM1B
+    //    GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 1;  // GPIO2 = PWM2A
+    //    GpioCtrlRegs.GPAMUX1.bit.GPIO3 = 1;  // GPIO3 = PWM2B
 
-//--- open output 4,5,6
+    GpioCtrlRegs.GPAMUX1.bit.GPIO0  = 0;  // GPIO0 = PWM1A
+    GpioCtrlRegs.GPAMUX1.bit.GPIO1  = 0;  // GPIO1 = PWM1B
+    GpioCtrlRegs.GPAMUX1.bit.GPIO2  = 0;  // GPIO2 = PWM2A
+    GpioCtrlRegs.GPAMUX1.bit.GPIO3  = 0;  // GPIO3 = PWM2B
+
+    GpioCtrlRegs.GPADIR.bit.GPIO0 = 1;   //--- GPIO8 = output
+    GpioCtrlRegs.GPADIR.bit.GPIO1 = 1;   //--- GPIO8 = output
+    GpioCtrlRegs.GPADIR.bit.GPIO2 = 1;   //--- GPIO8 = output
+    GpioCtrlRegs.GPADIR.bit.GPIO3 = 1;   //--- GPIO8 = output
+
+    GpioDataRegs.GPACLEAR.bit.GPIO0 = 1;  // Set Output
+    GpioDataRegs.GPACLEAR.bit.GPIO1 = 1;  // Set Output
+    GpioDataRegs.GPACLEAR.bit.GPIO2 = 1;  // Set Output
+    GpioDataRegs.GPACLEAR.bit.GPIO3 = 1;  // Set Output
+
+    //--- open output 4,5,6
     GpioCtrlRegs.GPAPUD.bit.GPIO4 = 0;   // Enable pullup on GPIO4
     GpioCtrlRegs.GPAPUD.bit.GPIO5 = 0;   // Enable pullup on GPIO5
     GpioCtrlRegs.GPAPUD.bit.GPIO6 = 0;   // DB-pulse

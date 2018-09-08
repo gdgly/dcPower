@@ -65,8 +65,8 @@ interrupt void adcIsr(void)
 
     nativeIout = IOUT_SCALE * ( adcIout-ADC_IOUT_OFFSET )  + IOUT_OFFSET;
     nativeIpri = IPRI_SCALE * ( adcIpri-ADC_IPRI_OFFSET )  + IPRI_OFFSET;
-    nativeVout = VOUT_SCALE * ( adcVout-ADC_VOUT_OFFSET )  + VOUT_OFFSET;
-    nativeVdc  = VDC_SCALE  * ( adcVdc  -ADC_VDC_OFFSET )  +  VDC_OFFSET;
+    nativeVout = VoutScale * ( adcVout)  + VoutOffset;
+    nativeVdc  = VdcScale  * ( adcVdc)  +  VdcOffset;
 
     lpfIoutIn[0] = nativeIout;
     lpf2nd( lpfIoutIn, lpfIoutOut, lpfIoutK);

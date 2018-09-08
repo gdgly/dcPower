@@ -15,7 +15,6 @@ void trip_recording(int trip_code,float trip_data,char * st)
 	TripInfoNow.CODE	= trip_code;
 	TripInfoNow.DATA	= trip_data;
 	strncpy( TripInfoNow.MSG,st,20) ;
-	gMachineState 		= STATE_TRIP;
 	TripInfoNow.CURRENT	= Iout;
 	TripInfoNow.VDC 	= Vdc;
 	TripInfoNow.VOUT 	= Vout;
@@ -59,21 +58,18 @@ int CheckOverVolt( )
 	static int OverVoltCount = 0;
 
 	if( protect_reg.bit.OVER_VOLT == 0 ) return 0;
-	if (Vdc > 700.0 ) OverVoltCount++;
-	else if( OverVoltCount > 0) OverVoltCount --;
+	if      (Vdc > 700.0 ) OverVoltCount++;
+	else if ( OverVoltCount > 0) OverVoltCount --;
 
-	if (OverVoltCount > 5 )
-	{
+	if (OverVoltCount > 5 ){
 		OverVoltCount = 6;
 		trip_recording( ERR_OV_VDC,Vdc,"Trip Vdc Over");
-
 		return ERR_OV_VDC;
 	}
 	return 0;
 }
 
-int CheckOVP( )
-{
+int CheckOVP( ){
 	if( Vout > code_VoutLimit )	ovpTimer += Ts;
 	else if(ovpTimer > Ts)		ovpTimer -= Ts;
 
@@ -84,26 +80,19 @@ int CheckOVP( )
 	return 0;
 }
 
-//-----------------------------------------------
-//  ������ ��ȣ 
-//-----------------------------------------------
-
 int CheckUndeVolt( )
 {
 	static int UnderVoltCount = 0;
 
 	if( protect_reg.bit.UNVER_VOLT == 0 ) return 0;
-
 	if( gMachineState == STATE_POWER_ON ) return 0;	// 2014.0901 by soongil
 
 	if (Vdc < 400.0 ) 	UnderVoltCount++;
 	else if( UnderVoltCount > 0) 	UnderVoltCount--;
 
-	if (UnderVoltCount > 5 )
-	{
+	if (UnderVoltCount > 5 ){
 		UnderVoltCount = 6;
 		trip_recording( ERR_UV_VDC,Vdc,"Trip Vdc Under");
-
 		return ERR_UV_VDC;
 	}
 	return 0;
@@ -135,11 +124,10 @@ int CheckIGBTFault( )
 int tripCheck()
 {
 	int TripCode;
-
 	TripCode = 0;
 	if( ( TripCode = CheckOverCurrent()) != 0 ) return TripCode ;	// debug
 	if( ( TripCode = CheckOverVolt()   ) != 0 ) return TripCode ;
-	if( ( TripCode = CheckUndeVolt()   ) != 0 ) return TripCode ;	// ���������� ������ �Ѵ�. 
+	if( ( TripCode = CheckUndeVolt()   ) != 0 ) return TripCode ;
 	if( ( TripCode = CheckIGBTFault()  ) != 0 ) return TripCode ;
 	if( ( TripCode = CheckOVP( )       ) != 0 ) return TripCode ;
 	return TripCode;
@@ -166,11 +154,9 @@ void tripProc( )
 	GpioDataRegs.GPACLEAR.bit.GPIO1 = 1;  // output low
 	GpioDataRegs.GPACLEAR.bit.GPIO2 = 1;  // output low
 	GpioDataRegs.GPACLEAR.bit.GPIO3 = 1;  // output low
-
 	EDIS;
 
 	gMachineState = STATE_TRIP;
-
 	MAIN_CHARGE_OFF;					// Main Charge Relay Off
 	init_charge_flag=0;
 
@@ -180,8 +166,7 @@ void tripProc( )
 		SaveTripDataToEeprom();  // debug_jsk
 
 	LoopCtrl = CMD_NULL;
-	while( LoopCtrl != CMD_RESET)
-	{
+	while( LoopCtrl != CMD_RESET){
 		get_command( & iCommand, & fReference);	// Command�� �Է� ���� 				
 		if( iCommand == CMD_RESET) LoopCtrl = CMD_RESET;
 		Nop();
@@ -195,13 +180,10 @@ void tripProc( )
 		Nop();
 	}
 
-	for( ; ; ) // system reset 
-	{
-		gMachineState = STATE_TRIP;
-		Nop();
-		asm (" .ref _c_int00"); // ;Branch to start of boot.asm in RTS library
-		asm (" LB _c_int00"); // ;Branch to start of boot.asm in RTS library
-	}
+	gMachineState = STATE_POWER_ON;
+	Nop();
+	asm (" .ref _c_int00"); // ;Branch to start of boot.asm in RTS library
+	asm (" LB _c_int00"); // ;Branch to start of boot.asm in RTS library
 }
 
 void GetTripInfo(int Point,TRIP_INFO * TripData )

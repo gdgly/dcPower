@@ -38,7 +38,6 @@ void main( void )
 	protect_reg.all = 0;
 	MAIN_CHARGE_OFF;
 	init_charge_flag = 0;
-//	RESET_DRIVER_CLEAR;
 
 	gMachineState = STATE_POWER_ON; 
 	DINT;
@@ -91,6 +90,10 @@ void main( void )
 
     InitWatchDog();
 
+    GATE_DRIVER_CLEAR;
+    delay_msecs(20);
+    GATE_DRIVER_SET;
+
     ADC_SOC_CNF();
     strncpy(MonitorMsg,"POWER_ON",20);
 
@@ -104,7 +107,6 @@ void main( void )
     TripInfoNow.VOUT    = Vout = 0.0;
 
     // init_eprom_data();
-
     temp = load_code2ram();
     if( temp ) tripProc();
 
@@ -122,7 +124,9 @@ void main( void )
 	gfRunTime = 0.0;
 
     delay_msecs(500);
-    temp = (int)(floor(codeProtectOff+0.5));
+
+    temp = (int)(floor(code_protect_inhibit_on+0.5));
+//     temp = (int)(floor(codeProtectOff+0.5));
 
     if( temp != 0 )
 	{
@@ -134,13 +138,14 @@ void main( void )
 		protect_reg.bit.OVER_I = 0;
 	}
 	else {
-		if(code_protect_uv_off == 0 ) 		protect_reg.bit.UNVER_VOLT = 1;	//
-		if(code_protect_ov_off == 0 ) 		protect_reg.bit.OVER_VOLT = 1;
-		if(code_protect_Iadc_off == 0 ) 	protect_reg.bit.OVER_I_ADC = 1;
-		if(code_protect_over_I_off == 0) 	protect_reg.bit.OVER_I = 1;
-		if(code_protect_IGBT_off == 0 ) 	protect_reg.bit.IGBT_FAULT = 1;		
-		if(code_protect_ex_trip_off == 0 ) 	protect_reg.bit.EX_TRIP = 1;
+		protect_reg.bit.UNVER_VOLT = 1;	//
+		protect_reg.bit.OVER_VOLT = 1;
+		protect_reg.bit.OVER_I_ADC = 1;
+		protect_reg.bit.OVER_I = 1;
+		protect_reg.bit.IGBT_FAULT = 1;
+		protect_reg.bit.EX_TRIP = 1;
 	}
+
 
     init_charge_flag = 1;
 	while( gfRunTime < 5.0){
@@ -148,7 +153,7 @@ void main( void )
 	}
 	gPWMTripCode = 0;	loop_ctrl = 1;	gfRunTime = 0.0;
 
-	if((codeProtectOff == 0 ) & (code_protect_uv_off == 0 )){
+	if(code_protect_uv_off == 0 ){
 		while( loop_ctrl == 1){
 			if( Vdc > under_volt_set ) loop_ctrl = 0;
 			if( gfRunTime > 5.0) loop_ctrl = 0;
@@ -173,7 +178,6 @@ void main( void )
 	load_sci_tx_mail_box(gStr1); delay_msecs(20);
 	temp = 0;
 
-	GATE_DRIVER_ENABLE;
 
 	for( ; ; )
 	{
@@ -188,8 +192,8 @@ void main( void )
 		    switch(temp){
 		        case 3: trip_code = mode3Current_P_I_LoopCtrl();break;
 		        case 8: trip_code = mode8LoopCtrl();break;
-                case 9: pwmPulseTestLoopCtrl();break;
-                case 2: pwmPulseTestLoopCtrl();break;
+                case 9: trip_code = pwmPulseTestLoopCtrl();break;
+                case 2: trip_code = pwmPulseTestLoopCtrl();break;
 		        default:
 		            trip_code = 0;
                     strncpy(gStr1,"set code 10 ctrl mode",20);

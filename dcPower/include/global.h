@@ -145,7 +145,6 @@ float code_adc_Vout_high;
 float code_Vout_calc_low;
 float code_Vout_calc_high;
 
-int codeProtectOff = 0;
 int code_protect_uv_off = 0;
 int code_protect_ov_off = 0;
 int code_protect_Iadc_off = 0;

@@ -13,8 +13,7 @@ void epwmFullBridgeEnable()
 
 void epwmFullBridgeDisable()
 {
-	MAIN_CHARGE_OFF;
-	
+//	MAIN_CHARGE_OFF;
 	EALLOW;
 	GpioCtrlRegs.GPAMUX1.bit.GPIO0 	= 0;  // GPIO0 = PWM1A
 	GpioCtrlRegs.GPAMUX1.bit.GPIO1 	= 0;  // GPIO1 = PWM1B
@@ -39,20 +38,26 @@ void initVariFullbridgeCtrl( )
 	Ts = 1.0 / SWITCHING_FREQ;  //
 
 	// for Vdc calc
-	x1 = code_adc_vdc_low;		y1 = code_Vdc_calc_low;
-	x2 = code_adc_vdc_high;		y2 = code_Vdc_calc_high;
+//	x1 = code_adc_vdc_low;		y1 = code_Vdc_calc_low;
+//    x2 = code_adc_vdc_high;		y2 = code_Vdc_calc_high;
+	x1 = 3052.0   ; y1 = 400.0;
+	x2 = 3330.0   ; y2 = 600.0;
+
 	VdcScale = ( y2-y1) / ( x2 - x1 );
 	VdcOffset = (( y1 * x2 - y2 * x1 )/ (x2- x1));
 
 // for Vout calc 
-	x1 = code_adc_Vout_low;		y1 = code_Vout_calc_low;
-	x2 = code_adc_Vout_high;	y2 = code_Vout_calc_high;
+	//  x1 = code_adc_Vout_low;     y1 = code_Vout_calc_low;
+	//  x2 = code_adc_Vout_high;    y2 = code_Vout_calc_high;
+	x1 = 2030.0;     y1 = 2.0;
+	x2 = 2740.0;     y2 = 8.0;
 	VoutScale = ( y2-y1) / ( x2 - x1 );
 	VoutOffset = (( y1 * x2 - y2 * x1 )/ (x2- x1));
 
 // for Phase calc 
 	y1 = code_adc_Vout_low;		x1 = code_Vout_calc_low;
 	y2 = code_adc_Vout_high;	x2 = code_Vout_calc_high;
+
 	phaseScale = ( y2-y1) / ( x2 - x1 );
 	phaseOffset = (( y1 * x2 - y2 * x1 )/ (x2- x1));
 
@@ -78,50 +83,86 @@ void initVariFullbridgeCtrl( )
 }	
 
 void initEpwmFullBridge()
-{  
+{
     EPwm1Regs.ETSEL.bit.INTEN = 0;                  // Enable INT
-    MAX_PWM_CNT = (Uint16)( ( F_OSC *0.5 * DSP28_PLLCR / SWITCHING_FREQ ) * 0.5 * 0.5 * 0.5);
-//--- PWM Module1
-    EPwm1Regs.TBPRD                 =  MAX_PWM_CNT;         // Set timer period
-    EPwm1Regs.TBPHS.half.TBPHS      = 0x0000; // Phase is 0
-    EPwm1Regs.TBCTL.bit.CTRMODE     = TB_COUNT_UPDOWN;  //
-    EPwm1Regs.TBCTL.bit.PHSEN       = TB_DISABLE;   // 2017.09.05
-    EPwm1Regs.TBCTL.bit.PRDLD       = TB_SHADOW;    // 2017.09.05
-    EPwm1Regs.TBCTL.bit.SYNCOSEL    = TB_CTR_ZERO;
-    EPwm1Regs.CMPCTL.bit.SHDWAMODE  = CC_SHADOW;    // Load registers every ZERO
-    EPwm1Regs.CMPCTL.bit.SHDWBMODE  = CC_SHADOW;
-    EPwm1Regs.CMPCTL.bit.LOADAMODE  = CC_CTR_ZERO;
-    EPwm1Regs.CMPCTL.bit.LOADBMODE  = CC_CTR_ZERO;
-    EPwm1Regs.AQCTLA.bit.CAU        = AQ_CLEAR;
-    EPwm1Regs.AQCTLA.bit.CAD        = AQ_SET;
+    MAX_PWM_CNT = (Uint16)( ( F_OSC * DSP28_PLLCR / SWITCHING_FREQ ) * 0.5 * 0.5);
+
+    EPwm1Regs.TBPRD =  MAX_PWM_CNT;         // Set timer period
+    EPwm1Regs.TBPHS.half.TBPHS = 0x0000;            // Phase is 0
+    EPwm1Regs.TBCTR = 0x0000;                       // Clear counter
+
+    // Setup TBCLK
+    EPwm1Regs.TBCTL.bit.PHSDIR = TB_UP;             // Count up
+    EPwm1Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;  //
+    EPwm1Regs.TBCTL.bit.PHSEN = TB_ENABLE;          // 2010.06.21
+    EPwm1Regs.TBCTL.bit.HSPCLKDIV = 0;              // Clock ratio to SYSCLKOUT
+    EPwm1Regs.TBCTL.bit.CLKDIV = 0;
+    EPwm1Regs.TBCTL.bit.SYNCOSEL = TB_CTR_ZERO;
+
+    EPwm1Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;     // Load registers every ZERO
+    EPwm1Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;
+    EPwm1Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO;
+    EPwm1Regs.CMPCTL.bit.LOADBMODE = CC_CTR_ZERO;
+
+    //    EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT>>1;
+    EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT;
+
+    EPwm1Regs.AQCTLA.bit.CAU = AQ_SET;
+    EPwm1Regs.AQCTLA.bit.ZRO = AQ_CLEAR;
+
+    EPwm1Regs.AQCTLB.bit.CAU = AQ_CLEAR;
+    EPwm1Regs.AQCTLB.bit.ZRO = AQ_SET;
+
+    EPwm1Regs.DBCTL.bit.IN_MODE     = DB_FULL_ENABLE;
     EPwm1Regs.DBCTL.bit.OUT_MODE    = DB_FULL_ENABLE;
-    EPwm1Regs.DBCTL.bit.POLSEL      = DB_ACTV_LOC;
-    EPwm1Regs.DBRED                 = DEAD_TIME_COUNT; // debug set to 4usec
-    EPwm1Regs.DBFED                 = DEAD_TIME_COUNT;
-    EPwm1Regs.CMPA.half.CMPA        = MAX_PWM_CNT;
+    EPwm1Regs.DBCTL.bit.POLSEL  = DB_ACTV_HIC;
 
-    //--- Set PWM2
-    EPwm2Regs.TBPRD                 =  MAX_PWM_CNT;             // Set timer period
-    EPwm2Regs.TBPHS.half.TBPHS      = 0x0000;            // Phase is 0
-    EPwm2Regs.TBCTL.bit.CTRMODE     = TB_COUNT_UPDOWN;      // Count up
-    EPwm2Regs.TBCTL.bit.PHSEN       = TB_ENABLE;
-    EPwm2Regs.TBCTL.bit.PRDLD       = TB_SHADOW;          // 2017.09.05
-    EPwm2Regs.TBCTL.bit.SYNCOSEL    = TB_SYNC_IN;
-    EPwm2Regs.CMPCTL.bit.SHDWAMODE  = CC_SHADOW;
-    EPwm2Regs.CMPCTL.bit.SHDWBMODE  = CC_SHADOW;
-    EPwm2Regs.CMPCTL.bit.LOADAMODE  = CC_CTR_ZERO;
-    EPwm2Regs.CMPCTL.bit.LOADBMODE  = CC_CTR_ZERO;
-    EPwm2Regs.AQCTLA.bit.CAU        = AQ_CLEAR;
-    EPwm2Regs.AQCTLA.bit.CAD        = AQ_SET;
-    EPwm2Regs.DBCTL.bit.OUT_MODE    = DB_FULL_ENABLE;
-    EPwm2Regs.DBCTL.bit.POLSEL      = DB_ACTV_LOC;
-    EPwm2Regs.DBRED                 = DEAD_TIME_COUNT;
-    EPwm2Regs.DBFED                 = DEAD_TIME_COUNT;
-    EPwm2Regs.CMPA.half.CMPA        = MAX_PWM_CNT;
-//  EPwm2Regs.ETSEL.bit.INTEN = 0;
+    EPwm1Regs.DBRED = (Uint16)( DEAD_TIME_COUNT );
+    EPwm1Regs.DBFED = (Uint16)( DEAD_TIME_COUNT );
 
-//  AdcRegs.ADCTRL2.bit.EPWM_SOCA_SEQ1 = 1;// Enable SOCA from ePWM to start SEQ1
-//  AdcRegs.ADCTRL3.all = 0x00FE;  // Power up bandgap/reference/ADC circuits
+    // Set PWM2
+    EPwm2Regs.TBPRD =  MAX_PWM_CNT;             // Set timer period
+    EPwm2Regs.TBCTL.bit.PHSDIR = TB_UP; // Count up
+    EPwm2Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;      // Count up
+    EPwm2Regs.TBCTL.bit.HSPCLKDIV = 0;                  // Clock ratio to SYSCLKOUT
+    EPwm2Regs.TBCTL.bit.CLKDIV = 0;                     // Slow just to observe on the scope
+
+    EPwm2Regs.TBPHS.half.TBPHS = 0x0000;            // Phase is 0
+    EPwm2Regs.TBCTL.bit.PHSEN = TB_ENABLE;
+    EPwm2Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;
+    EPwm2Regs.CMPA.half.CMPA = MAX_PWM_CNT;
+
+    EPwm2Regs.AQCTLA.bit.CAU = AQ_SET;
+    EPwm2Regs.AQCTLA.bit.ZRO = AQ_CLEAR;
+
+    EPwm2Regs.AQCTLB.bit.CAU = AQ_CLEAR;
+    EPwm2Regs.AQCTLB.bit.ZRO = AQ_SET;
+
+    EPwm2Regs.DBCTL.bit.IN_MODE = DB_FULL_ENABLE;
+    EPwm2Regs.DBCTL.bit.OUT_MODE= DB_FULL_ENABLE;
+
+    EPwm2Regs.DBCTL.bit.POLSEL = DB_ACTV_HIC;
+
+    EPwm2Regs.DBRED = ( DEAD_TIME_COUNT ) ;
+    EPwm2Regs.DBFED = ( DEAD_TIME_COUNT );
+    EPwm2Regs.ETSEL.bit.INTEN = 0;
+//-------------
+    EPwm1Regs.ETSEL.bit.INTSEL = ET_CTR_ZERO;   // Select INT on Zero event
+    EPwm1Regs.ETPS.bit.INTPRD = 1;   // Generate interrupt on the 1st event
+    EPwm1Regs.ETCLR.bit.INT = 1;     //
+
+    EALLOW;
+    GpioCtrlRegs.GPAMUX1.bit.GPIO0  = 0;  // GPIO0 = PWM1A
+    GpioCtrlRegs.GPAMUX1.bit.GPIO1  = 0;  // GPIO1 = PWM1B
+    GpioCtrlRegs.GPAMUX1.bit.GPIO2  = 0;  // GPIO2 = PWM2A
+    GpioCtrlRegs.GPAMUX1.bit.GPIO3  = 0;  // GPIO3 = PWM2B
+
+    GpioDataRegs.GPACLEAR.bit.GPIO0 = 1;  // Set Output
+    GpioDataRegs.GPACLEAR.bit.GPIO1 = 1;  // Set Output
+    GpioDataRegs.GPACLEAR.bit.GPIO2 = 1;  // Set Output
+    GpioDataRegs.GPACLEAR.bit.GPIO3 = 1;  // Set Output
+    EDIS;
+
     EPwm1Regs.ETSEL.bit.INTSEL = ET_CTR_ZERO;   // Select INT on Zero event
     EPwm1Regs.ETPS.bit.INTPRD = 1;   // Generate interrupt on the 1st event
     EPwm1Regs.ETCLR.bit.INT = 1;     //
@@ -131,7 +172,6 @@ void initEpwmFullBridge()
     EPwm1Regs.ETPS.bit.SOCAPRD = 1;        // Generate pulse on 1st event
 
     PieCtrlRegs.PIEIER3.all = M_INT1;   // ePWM
-    // PieCtrlRegs.PIEIER3.bit.INTx1 = PWM1_INT_ENABLE;
 }
 
 void pwmPulseTest()
@@ -423,14 +463,13 @@ int pwmPulseTestLoopCtrl( )
 	EPwm1Regs.ETSEL.bit.INTEN = 1;    		            // Enable INT
 	IER |= M_INT3;      // debug for PWM
 
-	strncpy(MonitorMsg,"INIT_RUN",20);
-
+	strncpy(MonitorMsg,"RUN",20);
 	LoopCtrl = 1;
-
 	gMachineState = STATE_RUN;
 
 	test_pulse_count = 0;
 
+	epwmFullBridgeEnable();
 	while(LoopCtrl == 1)
 	{
 		trip_code = tripCheck();

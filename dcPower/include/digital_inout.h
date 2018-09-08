@@ -7,7 +7,7 @@
 #define EX_TRIP_INPUT       ( GpioDataRegs.GPADAT.bit.GPIO8 )
 #define RUN_INPUT           ( GpioDataRegs.GPADAT.bit.GPIO12 )
 
-#define GATE_DRIVER_ENABLE  (GpioDataRegs.GPASET.bit.GPIO7 = 1)
+#define GATE_DRIVER_SET     (GpioDataRegs.GPASET.bit.GPIO7 = 1)
 #define GATE_DRIVER_CLEAR   (GpioDataRegs.GPACLEAR.bit.GPIO7= 1)
 #define MAIN_CHARGE_OFF     (GpioDataRegs.GPACLEAR.bit.GPIO10 = 1)
 #define MAIN_CHARGE_ON      (GpioDataRegs.GPASET.bit.GPIO10   = 1)

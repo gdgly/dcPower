@@ -9,20 +9,6 @@
 
 double phase_ratio=0.0;
 
-/*
-interrupt void MainPWM(void){
-
-    EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 1 ;
-    EPwm2Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 1;
-
-    EPwm1Regs.ETCLR.bit.INT = 1;
-    PieCtrlRegs.PIEACK.all = PIEACK_GROUP3;
-
-//  MAIN_CHARGE_OFF;
-    return;
-}
-*/
-
 interrupt void MainPWM(void)
 {
 //	unsigned int temp;
@@ -33,17 +19,17 @@ interrupt void MainPWM(void)
 	if ( EX_TRIP_INPUT == 0 ){
 	    gPWMTripCode = TRIP_EXT_A;
 		trip_recording( TRIP_EXT_A, TRIP_EXT_A ,"TRIP EXT A");
+        epwmFullBridgeDisable(); // converter PWM gate OFF
+        goto _PWM_OUT_END;
 	}
+
 	if(gPWMTripCode == 0){ 
 		gPWMTripCode = tripCheck();		// debug_soonkil
 		if(gPWMTripCode != 0 ){
-			gMachineState = STATE_TRIP;
 			epwmFullBridgeDisable(); // converter PWM gate OFF
 			goto _PWM_OUT_END;
 		}
-	}
-	else{ 
-		gMachineState = STATE_TRIP; // trip_check�ÿ� ����� 
+	} else {
 		epwmFullBridgeDisable(); // converter PWM gate OFF
 		goto _PWM_OUT_END;
 	}
@@ -60,9 +46,11 @@ interrupt void MainPWM(void)
 			break;
 
 		case STATE_READY:
-			EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 1;
-			EPwm2Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 1;
+            epwmFullBridgeDisable(); //inverter  PWM gate OFF
+			EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT;
+			EPwm2Regs.CMPA.half.CMPA = MAX_PWM_CNT;
 			invt_PWM_Port_Set_flag = 0;
+            epwmFullBridgeDisable(); //inverter  PWM gate OFF
 			EPwm2Regs.TBPHS.half.TBPHS = 0;
 			break;
 
@@ -85,31 +73,24 @@ interrupt void MainPWM(void)
 			EPwm2Regs.CMPA.half.CMPA = MAX_PWM_CNT>>1;
 
 			if( code_ctrl_mode == 3 ){ 
-
 				ctrlError =  reference_out -  Iout * 0.001; // 1000 Amp Max�� �����
 				ctrlIntegral = preIntegral + (Ts * code_Ki * ctrlError);
 				ctrlIntegral = (ctrlIntegral > code_integLimit) ? code_integLimit : ( ctrlIntegral < -code_integLimit) ? -code_integLimit : ctrlIntegral;
-
 				phaseShiftRatio = (ctrlError * code_Kp) + ctrlIntegral;
-
 				// Vout = VoutScale * reference_out  + VoutOffset ;  
-
 				if     ( phaseShiftRatio < 0.0 ) 	phaseShiftRatio = 0.0;
 				else if( phaseShiftRatio > phaseVref ) 	phaseShiftRatio = phaseVref; 
-
 				preIntegral = ctrlIntegral;
-
 				EPwm2Regs.TBPHS.half.TBPHS = (Uint16)( MAX_PWM_CNT * phaseShiftRatio * 0.5 );
-
 			} else if( code_ctrl_mode == 8 ){ // mode8LoopCtrl mode
 				EPwm2Regs.TBPHS.half.TBPHS = (Uint16)( MAX_PWM_CNT * reference_out * 0.5 );
 			} else if( code_ctrl_mode == 2 ){ // mode2LoopCtrl mode
 				EPwm2Regs.TBPHS.half.TBPHS =(Uint16)( MAX_PWM_CNT * code_testPwmPhase * 0.5 );
 			} else if( code_ctrl_mode == 9 ){
-                if(( codeSetPulseNumber <  1.0 ) && ( test_pulse_count < codeSetPulseNumber)){
-                    EPwm2Regs.TBPHS.half.TBPHS = (Uint16)( MAX_PWM_CNT * codePwmPhaseInit * 0.5 );
-                } else if( test_pulse_count < codeSetPulseNumber ){
-                    EPwm2Regs.TBPHS.half.TBPHS = (Uint16)( MAX_PWM_CNT * codePwmPhaseInit * 0.5 );
+                if( codeSetPulseNumber <  1.0 ){
+                    EPwm2Regs.TBPHS.half.TBPHS = (Uint16)( MAX_PWM_CNT * code_testPwmPhase * 0.5 );
+                } else if ( test_pulse_count < codeSetPulseNumber ){
+                    EPwm2Regs.TBPHS.half.TBPHS = (Uint16)( MAX_PWM_CNT * code_testPwmPhase * 0.5 );
                     test_pulse_count++;
                } else {
                     EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 1;
@@ -126,7 +107,6 @@ interrupt void MainPWM(void)
 			break;
 
 		case STATE_GO_STOP:
-
 			if ( reference_out < 0.10){
 				reference_out = 0.0;
 				EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT >> 1;
