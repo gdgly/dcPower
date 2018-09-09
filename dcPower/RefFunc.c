@@ -2,7 +2,7 @@
 #include	<extern.h>
 
 
-float codeAccelTime1 = 1.0;
+float codeAccelTime1 = 20.0;
 float codeDecelTime1 = 1.0;
 
 void ramp_proc( float SetRef,float * pOutRef)

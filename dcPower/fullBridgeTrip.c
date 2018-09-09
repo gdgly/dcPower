@@ -22,7 +22,6 @@ void trip_recording(int trip_code,float trip_data,char * st)
 
 int CheckOverCurrent( )
 {
-    return 0;
 //--- OC I_pri check
 	if(( protect_reg.bit.OVER_I_ADC)&&( adcIpri > 4000)){
 		trip_recording( ERR_OC_I_PRI_ADC_P, (float)(adcIpri),"adcIpri over");

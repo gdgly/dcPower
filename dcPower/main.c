@@ -33,7 +33,14 @@ void main( void )
 
 	InitSysCtrl();
 	InitGpio();
-
+/*
+	for( ; ; ){
+        count = PWM0_HIGH_FAULT;
+        count = PWM0_LOW_FAULT;
+        count = PWM1_HIGH_FAULT;
+        count = PWM1_LOW_FAULT;
+	}
+*/
 	gfRunTime = 0.0; 
 	protect_reg.all = 0;
 	MAIN_CHARGE_OFF;
@@ -114,7 +121,7 @@ void main( void )
 
     lpf2ndCoeffInit( 1000.0, Ts, lpfIoutIn, lpfIoutOut, lpfIoutK);
     lpf2ndCoeffInit(  100.0, Ts, lpfVoutIn, lpfVoutOut, lpfVoutK);
-    lpf2ndCoeffInit( 1000.0, Ts, lpfVdcIn,    lpfVdcOut, lpfVdcK);
+    lpf2ndCoeffInit( 100.0, Ts, lpfVdcIn,    lpfVdcOut, lpfVdcK);
 
 	IER &= ~M_INT3;      // debug for PWM
     initEpwmFullBridge();   // debug

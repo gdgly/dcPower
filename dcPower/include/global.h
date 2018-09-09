@@ -130,10 +130,11 @@ float codeVdcSpan;
 float codeVoutOffset;
 float codeVoutSpan;
 
-float code_Ki;
-float code_Kp;
-float code_integLimit;
-float code_phaseMax;
+float code_Ki=50.0;
+float code_Kp=0.2;
+
+float code_integLimit=1.0;
+float code_phaseMax=0.7;
 
 float codeVdcOffset;
 float codeVdcSpan;
