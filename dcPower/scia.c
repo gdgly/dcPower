@@ -314,33 +314,20 @@ void scia_cmd_proc( int * sci_cmd, float * sci_ref)
          }
          else if(addr == 905){   // RUN & STOP
              check = (int)data;
-
              switch( check ){
-             case 0:
-                 * sci_cmd = CMD_START;
-                 // * sci_ref = code_btn_start_ref;
-                 break;
-             case 1:
-                 * sci_cmd = CMD_STOP;
-                 * sci_ref = 0.0;
-                 break;
-             case 2:
-                 * sci_cmd = CMD_SPEED_UP;
-                 break;
-             case 3:
-                 * sci_cmd = CMD_SPEED_DOWN;
-                 break;
-             default:
-                 * sci_cmd = CMD_NULL;
-                 break;
+             case 0: * sci_cmd = CMD_START; break;
+             case 1: * sci_cmd = CMD_STOP;      * sci_ref = 0.0; break;
+             case 2: * sci_cmd = CMD_SPEED_UP;   break;
+             case 3: * sci_cmd = CMD_SPEED_DOWN; break;
+             default: * sci_cmd = CMD_NULL; break;
              }
              return;
          }
-         else if (( addr > 979) && ( addr < 996)){
-             check = addr - 980;
-             snprintf( str,19,"adc =%4d",adc_result[check]);
-             load_scia_tx_mail_box(str);
-             delay_msecs(10);
+         else if ( addr == 980){
+             sprintf( str,"\x02 2Iout=%04d :Ipri:%04d \x03\r\n",adc_result[0],adc_result[1]);
+             load_scia_tx_mail_box(str); delay_msecs(100);
+             sprintf( str,"\x02 3Vdc =%04d :Vout:%04d \x03\r\n",adc_result[2],adc_result[3]);
+             load_scia_tx_mail_box(str); delay_msecs(100);
              return;
          }
 

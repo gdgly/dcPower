@@ -481,8 +481,16 @@ int pwmPulseTestLoopCtrl( )
 		} else {
 			get_command( & command, & ref_in0);	// Command
 			if( command == CMD_STOP){
-				gMachineState = STATE_READY;
-				LoopCtrl = 0;
+			    delay_msecs(10);
+	            get_command( & command, & ref_in0); // Command
+	            if( command == CMD_STOP){
+	                delay_msecs(10);
+	                get_command( & command, & ref_in0); // Command
+	                if( command == CMD_STOP){
+	                    gMachineState = STATE_READY;
+	                    return 0;
+	                }
+	            }
 			}
 		}						
 	}

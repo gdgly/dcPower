@@ -1,6 +1,10 @@
 #ifndef		__VARIABLES_
 #define		__VARIABLES_
 
+extern int dayRun;
+extern int hourRun;
+extern int secRun;
+
 #if USE_GRAPH
 extern int graphCount;
 extern int y1_data[GRAPH_NUMBER];
@@ -158,23 +162,22 @@ extern float codeVoutSpan;          // 413
 //   CODE variable 
 //============================================
 extern float code_I_out_ref;	    // 0
-extern float code_ctrl_mode;		    // 1
-extern float code_Vout;
-extern float code_VoutLimit;	    // 3
-extern float code_ovpTime;		    // 4
-extern float codeOcTime;            // 5
+extern float code_Vout;             // 1
+extern float code_VoutLimit;	    // 2
+extern float code_ovpTime;		    // 3
+extern float codeOcTime;            // 4
+extern float codePwmPhaseInit;	    // 5
+extern float codeInitTime;		    // 6
 
-extern float codePwmPhaseInit;	    // 6
-extern float codeInitTime;		    // 7
-
-extern float codeSetPulseNumber;	// 10
-extern float code_testPwmPhase;		// 11
-extern float code_set_Vdc_on;			// 12
-extern float code_Vdc_set_value;	// 13
-extern float code_protect_inhibit_on;   // 14
-
-extern float rDeadTime;			    // 20
-extern float allDeadTime;			// 21
+extern float code_ctrl_mode;        // 10
+extern float codeSetPulseNumber;	// 11
+extern float code_testPwmPhase;		// 12
+extern float code_set_Vdc_on;       // 13
+extern float codeIoutAdcOffset;     // 14
+extern float codeIpriAdcOffset;     // 15
+extern float codeIoutScale;         // 16
+extern float codeIpriScale;         // 17
+extern float code_protect_inhibit_on;   // 18
 
 extern float Is_Max_Coeff;				// 206
 extern float code_OC_time;				// 207

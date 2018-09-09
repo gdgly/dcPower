@@ -19,11 +19,13 @@
 #define CODE_SetPulseNumber				11
 #define CODE_testPwmPhase				12
 #define CODE_set_Vdc_on					13
-#define CODE_Vdc_set_value				14
-#define CODE_protect_inhibit_on         15
-//#define CODE_rDeadTime				20
-//#define CODE_allDeadTime				21
-#define CODE_END                        16
+#define CODE_IoutAdcOffset              14
+#define CODE_IpriAdcOffset              15
+#define CODE_IoutScale                  16
+#define CODE_IpriScale                  17
+#define CODE_protect_inhibit_on         18
+
+#define CODE_END                        19
 
 #define CODE_Data_Check                     800
 #define CODE_Data_Backup                    801

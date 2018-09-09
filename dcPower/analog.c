@@ -63,8 +63,8 @@ interrupt void adcIsr(void)
     adc_result[2] = adcVdc  = AdcResult.ADCRESULT2; // Vdc
     adc_result[3] = adcVout = AdcResult.ADCRESULT3; // Vout
 
-    nativeIout = IOUT_SCALE * ( adcIout-ADC_IOUT_OFFSET )  + IOUT_OFFSET;
-    nativeIpri = IPRI_SCALE * ( adcIpri-ADC_IPRI_OFFSET )  + IPRI_OFFSET;
+    nativeIout = -IOUT_SCALE * ( adcIout-codeIoutAdcOffset ) * codeIoutScale;
+    nativeIpri = -IPRI_SCALE * ( adcIpri-codeIoutAdcOffset ) * codeIpriScale;
     nativeVout = VoutScale * ( adcVout)  + VoutOffset;
     nativeVdc  = VdcScale  * ( adcVdc)  +  VdcOffset;
 
@@ -81,7 +81,7 @@ interrupt void adcIsr(void)
 
     if( gMachineState == STATE_READY){ Iout = 0.0; Vout = 0.0;}
 
-    if( code_set_Vdc_on > 0.5 ) Vdc = code_Vdc_set_value; // 2012.11.20
+    if( code_set_Vdc_on > 0.5 ) Vdc = 520;          // 2018.09.09
     else                        Vdc = lpfVdcOut[0];
 
     Pout = Vout * Iout ;

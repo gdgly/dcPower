@@ -69,6 +69,11 @@ float	inv_code_dac_scale_ch2;
 float	inv_code_dac_scale_ch3;
 float	inv_code_dac_scale_ch4;
 //===================
+
+int dayRun ;
+int hourRun ;
+int secRun;
+
 float phaseVref;
 float VdcScale;
 float VdcOffset;
@@ -155,20 +160,23 @@ int code_protect_ex_trip_off=0;
 //============================================
 //   CODE variable 
 //============================================
-float code_I_out_ref;           // 0
-float code_ctrl_mode;			// 1
-float code_Vout;
-float code_VoutLimit;		    // 3
-float code_ovpTime;             // 4
-float codeOcTime;
-float codePwmPhaseInit;         // 6
-float codeInitTime;             // 7
+float code_I_out_ref;        // 0
+float code_Vout;             // 1
+float code_VoutLimit;        // 2
+float code_ovpTime;          // 3
+float codeOcTime;            // 4
+float codePwmPhaseInit;      // 5
+float codeInitTime;          // 6
 
-float codeSetPulseNumber;		// 10
-float code_testPwmPhase;		// 11
-float code_set_Vdc_on;			// 12
-float code_Vdc_set_value;		// 13
-float code_protect_inhibit_on;  // 14
+float code_ctrl_mode;        // 10
+float codeSetPulseNumber;    // 11
+float code_testPwmPhase;     // 12
+float code_set_Vdc_on;       // 13
+float codeIoutAdcOffset;     // 14
+float codeIpriAdcOffset;     // 15
+float codeIoutScale;         // 16
+float codeIpriScale;         // 17
+float code_protect_inhibit_on;   // 18
 
 float Data_Check;				// 800
 float Data_Backup;				// 801

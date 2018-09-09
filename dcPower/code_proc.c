@@ -71,10 +71,28 @@ int get_code_information(int address,int cmd , CODE_INFO *  codes)
         set_code_default(0,1,1,code_set_Vdc_on,0,codes);
         break;
 
-    case CODE_Vdc_set_value:
-        strncpy(codes->disp, "Vdc set value(Vdc)",40);
-        if( cmd == CMD_WRITE_RAM ) code_Vdc_set_value = codes->code_value;
-        set_code_default(0.0,999.0,520.0,code_Vdc_set_value,0,codes);
+    case CODE_IoutAdcOffset:     // 14
+        strcpy(codes->disp, "Iout adc offset");
+        if( cmd == CMD_WRITE_RAM ) codeIoutAdcOffset = codes->code_value;
+        set_code_default(1500,2500,1830,codeIoutAdcOffset,0,codes);
+        break;
+
+    case CODE_IpriAdcOffset:     // 15
+        strcpy(codes->disp, "Ipri adc offset");
+        if( cmd == CMD_WRITE_RAM ) codeIpriAdcOffset = codes->code_value;
+        set_code_default(1500,2500,1830,codeIpriAdcOffset,0,codes);
+        break;
+
+    case CODE_IoutScale:     // 16
+        strcpy(codes->disp, "set Iout Scale");
+        if( cmd == CMD_WRITE_RAM ) codeIoutScale = codes->code_value;
+        set_code_default(0.2,3.0,1.0,codeIoutScale,0,codes);
+        break;
+
+    case CODE_IpriScale:     // 17
+        strcpy(codes->disp, "set Ipri Scale");
+        if( cmd == CMD_WRITE_RAM ) codeIpriScale = codes->code_value;
+        set_code_default(0.2,3.0,1.0,codeIpriScale,0,codes);
         break;
 
     case CODE_protect_inhibit_on:

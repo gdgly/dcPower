@@ -3,21 +3,26 @@
 
 void monitor_proc()     // need_edit
 {
-    int temp1,temp2,temp3,temp4;
+    int temp1,temp2,temp3,temp4,temp5;
     static int count = 0;
+
+    int secTemp,minTemp;
 
     count = (count < 998 ) ? count + 1 : 0;
 
-    temp1 = (int)( floor (Vout));
-    temp2 = ((int)(Vout * 10.0)) % 10;
+    temp1 = (Vout < 0.0 )? 0 : (int)( floor (Vout));
+    temp2 = (Vout < 0.0 )? 0 : ((int)(Vout * 10.0)) % 10;
 
-    temp3 = (int)(Pout/1000);
-    temp4 = ((int)(Pout / 100.0)) % 10;
+    temp3 = (Pout < 0.0 ) ? 0 : (int)(Pout/1000);
+    temp4 = (Pout < 0.0 ) ? 0 : ((int)(Pout / 100.0)) % 10;
 
-    sprintf( monitOut2,"\x02 1Vo=%02d.%01dV:Po=%02d.%01dkW\x03\r\n",temp1,temp2,temp3,temp4);
-    strcpy( monitOut3,"\x02 2                    \x03\r\n");
-    sprintf( monitOut4,"\x02 3                 %3d\x03\r\n",count);
+    temp5 = (Vdc < 0.0 ) ? 0: (int)(Vdc);
 
+    secTemp = secRun % 60;
+    minTemp = secRun / 60;
+
+    sprintf( monitOut2,"\x02 1Vo =%02d.%01dV: Po=%02d.%01dkW\x03\r\n",temp1,temp2,temp3,temp4);
+    sprintf( monitOut3,"\x02 2Vdc=%03dV: %d:%02d:%02d:%02d\x03\r\n",temp5,dayRun,hourRun,minTemp,secTemp);
 
     switch(gMachineState){
         case STATE_POWER_ON:
@@ -27,7 +32,7 @@ void monitor_proc()     // need_edit
         case STATE_READY:
 
             temp1 = (int)(floor(Iout+0.5));
-            sprintf(monitOut1,"\x02 0[READY] Io=%3d[A]  \x03\r\n",temp1);
+            sprintf(monitOut1,"\x02 0[READY] Io=%3d[A]   \x03\r\n",temp1);
             break;
 
         case STATE_TRIP:
@@ -51,21 +56,21 @@ void monitor_proc()     // need_edit
             break;
 
         case STATE_INIT_RUN:
-            strncpy(monitOut1,"\x02 0[INIT    ] DongHo P.E.\x03\r\n",25);
+            sprintf(monitOut1,"\x02 0[INIT RUN] Io =%03d[A] \x03\r\n",temp1);
             break;
 
         case STATE_GO_STOP:
             temp1 = (int)(floor(Iout+0.5));
-            sprintf(monitOut1,"\x02 0[GO STOP] Io:%03d[A]\x03\r\n",temp1);
+            sprintf(monitOut1,"\x02 0[GO STOP] Io =%03d[A]\x03\r\n",temp1);
             break;
         case STATE_RUN:
-
+            //            temp1 = (Iout < 0.0 ) ? 0: (int)(floor(Iout+0.5));
             temp1 = (int)(floor(Iout+0.5));
-            sprintf(monitOut1,"\x02 0[RUN] Io:%03d[A]\x03\r\n",temp1);
+            sprintf(monitOut1,"\x02 0[ RUN ] Io =%03d[A]\x03\r\n",temp1);
             break;
 
         default:
-            strncpy(monitOut1,"\x02 0[SYERR ] DongHo P.E.\x03\r\n",25);
+            sprintf(monitOut1,"\x02 0[SYSTEM INIT ] %d\x03\r\n",count);
             break;
     }
 }
