@@ -9,7 +9,7 @@
 
 #define OVER_C_TIME 60.0
 
-void trip_recording(int trip_code,float trip_data,char * st)
+void trip_recording(int trip_code,double trip_data,char * st)
 {
 	if(gRunFlag)	gTripSaveFlag = 1;
 	else			gTripSaveFlag = 0;
@@ -26,20 +26,20 @@ int CheckOverCurrent( )
 {
 //--- OC I_pri check
 	if(( protect_reg.bit.OVER_I_ADC)&&( adcIpri > 4000)){
-		trip_recording( ERR_OC_I_PRI_ADC_P, (float)(adcIpri),"adcIpri over");
+		trip_recording( ERR_OC_I_PRI_ADC_P, (double)(adcIpri),"adcIpri over");
 		return ERR_OC_I_PRI_ADC_P;
 	}
 	if(( protect_reg.bit.OVER_I_ADC)&&( adcIpri  < 100)){
-		trip_recording( ERR_OC_I_PRI_ADC_N, (float)(adcIpri),"adcIpri under");
+		trip_recording( ERR_OC_I_PRI_ADC_N, (double)(adcIpri),"adcIpri under");
 		return ERR_OC_I_PRI_ADC_N;
 	}
 //--- OC I_out check
 	if(( protect_reg.bit.OVER_I_ADC)&&( adcIout > 4000)){
-		trip_recording( ERR_OC_I_OUT_ADC_P, (float)(adcIout),"adcIout over ");
+		trip_recording( ERR_OC_I_OUT_ADC_P, (double)(adcIout),"adcIout over ");
 		return ERR_OC_I_OUT_ADC_P;
 	}
 	if(( protect_reg.bit.OVER_I_ADC)&&( adcIout  < 100)){
-		trip_recording( ERR_OC_I_OUT_ADC_N, (float)(adcIout),"adcIout under");
+		trip_recording( ERR_OC_I_OUT_ADC_N, (double)(adcIout),"adcIout under");
 		return ERR_OC_I_OUT_ADC_N;
 	}
 	if( protect_reg.bit.OVER_I){
@@ -138,7 +138,7 @@ void tripProc( )
 {
 	int iCommand;
 	int LoopCtrl;
-	float fReference;
+	double fReference;
 
 	EALLOW;
 	GpioCtrlRegs.GPAMUX1.bit.GPIO0 	= 0;  // gpio

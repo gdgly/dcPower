@@ -23,10 +23,10 @@ extern char monitOut2[30];
 extern char monitOut3[30];
 extern char monitOut4[30];
 
-extern float nativeI_out;
-extern float nativeI_pri;
-extern float nativeI2nd;
-extern float nativeI3rd;
+extern double nativeI_out;
+extern double nativeI_pri;
+extern double nativeI2nd;
+extern double nativeI3rd;
 
 //--- PI control variable
 extern double ctrlError;
@@ -41,20 +41,20 @@ extern int adcIout;
 extern int adcVout;
 extern int adcVdc;
 
-extern float nativeIout;
-extern float nativeIpri;
-extern float nativeVout;
-extern float nativeVdc;
+extern double nativeIout;
+extern double nativeIpri;
+extern double nativeVout;
+extern double nativeVdc;
 
-extern float Pout;
-extern float Ipri;
-extern float Iout;
-extern float Vout;
+extern double Pout;
+extern double Ipri;
+extern double Iout;
+extern double Vout;
 
-extern float OC_Timer;
-extern float ovpTimer;		// 2014.1016
+extern double OC_Timer;
+extern double ovpTimer;		// 2014.1016
 
-extern float monitor[5];
+extern double monitor[5];
 extern int debug_count;
 extern int test_pulse_count;
 
@@ -63,8 +63,8 @@ extern unsigned int igbt_fault_input;
 extern unsigned int digital_input;
 
 extern unsigned int DIGITAL_INPUT_START;
-extern float  DCLINK_LIMIT;
-extern float  UNDER_DC_LINK_LIMIT;
+extern double  DCLINK_LIMIT;
+extern double  UNDER_DC_LINK_LIMIT;
 
 extern int timer0_count;
 
@@ -82,43 +82,43 @@ extern int timer0_count;
 extern unsigned int Fault_Code;
 
 extern int init_charge_flag;
-extern float lpfIoutIn[3], lpfIoutOut[3],lpfIoutK[4];
-extern float lpfVoutIn[3], lpfVoutOut[3],lpfVoutK[4];
-extern float lpfVdcIn[3],  lpfVdcOut[3], lpfVdcK[4];
+extern double lpfIoutIn[3], lpfIoutOut[3],lpfIoutK[4];
+extern double lpfVoutIn[3], lpfVoutOut[3],lpfVoutK[4];
+extern double lpfVdcIn[3],  lpfVdcOut[3], lpfVdcK[4];
 
 extern unsigned int Fault_Code;
-extern float * dac_point[200];
+extern double * dac_point[200];
 
 extern int scib_rx_msg_flag;
 extern int scic_rx_msg_flag;
 
-extern float analog_ref_a;
-extern float analog_ref_b;
+extern double analog_ref_a;
+extern double analog_ref_b;
 
-extern float phaseVref;
-extern float VdcScale;
-extern float VdcOffset;
+extern double phaseVref;
+extern double VdcScale;
+extern double VdcOffset;
 
-extern float VoutScale;
-extern float VoutOffset;
+extern double VoutScale;
+extern double VoutOffset;
 
-extern float ref_time;	// 2009.10.28
+extern double ref_time;	// 2009.10.28
 
 extern CODE_INFO code_inform;
 extern union PROTECT_FLAG protect_reg;
 extern char TripMessage[25];
 // PWM
-extern float	DutyRatio[3];
+extern double	DutyRatio[3];
 extern Uint16 DutyCount[3];
-extern float 	gfRunTime;
-extern float	Ts;
-extern float	inv_Ts;
+extern double 	gfRunTime;
+extern double	Ts;
+extern double	inv_Ts;
 extern int timer0_count;
 // Ref.
-extern float   refer_in0;
-extern float	reference_in;
-extern float	reference_out;
-extern float	Vdc;
+extern double   refer_in0;
+extern double	reference_in;
+extern double	reference_out;
+extern double	Vdc;
 // Sci.c
 extern char gStr1[50];
 extern char gStr2[10];
@@ -140,66 +140,66 @@ extern Uint16	MAX_PWM_CNT;
 extern char MonitorMsg[30];
 extern int gRunFlag;
 extern int gTripSaveFlag;
-extern float OverCurLimit;
+extern double OverCurLimit;
 extern int EepromSaveFlag;
 extern int Flag_TripDataBackup;
 
-extern float	inv_code_dac_scale_ch1;
-extern float	inv_code_dac_scale_ch2;
-extern float	inv_code_dac_scale_ch3;
-extern float	inv_code_dac_scale_ch4;
+extern double	inv_code_dac_scale_ch1;
+extern double	inv_code_dac_scale_ch2;
+extern double	inv_code_dac_scale_ch3;
+extern double	inv_code_dac_scale_ch4;
 
-extern float code_adc_vdc_low;          // 710
-extern float code_adc_vdc_high;     // 711
-extern float code_Vdc_calc_low;     // 712
-extern float code_Vdc_calc_high;        // 713
+extern double code_adc_vdc_low;          // 710
+extern double code_adc_vdc_high;     // 711
+extern double code_Vdc_calc_low;     // 712
+extern double code_Vdc_calc_high;        // 713
 
-extern float code_adc_Vout_low;     // 715
-extern float code_adc_Vout_high;        // 716
-extern float code_Vout_calc_low;        // 717
-extern float code_Vout_calc_high;       // 718
+extern double code_adc_Vout_low;     // 715
+extern double code_adc_Vout_high;        // 716
+extern double code_Vout_calc_low;        // 717
+extern double code_Vout_calc_high;       // 718
 
-extern float codeVdcOffset;         // 410
-extern float codeVdcSpan;               // 411
-extern float codeVoutOffset;            // 412
-extern float codeVoutSpan;          // 413
+extern double codeVdcOffset;         // 410
+extern double codeVdcSpan;               // 411
+extern double codeVoutOffset;            // 412
+extern double codeVoutSpan;          // 413
 //============================================
 //   CODE variable 
 //============================================
-extern float code_I_out_ref;	    // 0
-extern float code_Vout;             // 1
-extern float code_VoutLimit;	    // 2
-extern float code_ovpTime;		    // 3
-extern float codeOcTime;           // 4
-extern float codePwmPhaseInit;	    // 5
-extern float codeInitTime;		    // 6
+extern double code_I_out_ref;	    // 0
+extern double code_Vout;             // 1
+extern double code_VoutLimit;	    // 2
+extern double code_ovpTime;		    // 3
+extern double codeOcTime;           // 4
+extern double codePwmPhaseInit;	    // 5
+extern double codeInitTime;		    // 6
 
-extern float code_ctrl_mode;        // 10
-extern float codeSetPulseNumber;	// 11
-extern float code_testPwmPhase;		// 12
-extern float code_set_Vdc_on;       // 13
-extern float codeIoutAdcOffset;     // 14
-extern float codeIpriAdcOffset;     // 15
-extern float codeIoutScale;         // 16
-extern float codeIpriScale;         // 17
-extern float code_protect_inhibit_on;   // 18
+extern double code_ctrl_mode;        // 10
+extern double codeSetPulseNumber;	// 11
+extern double code_testPwmPhase;		// 12
+extern double code_set_Vdc_on;       // 13
+extern double codeIoutAdcOffset;     // 14
+extern double codeIpriAdcOffset;     // 15
+extern double codeIoutScale;         // 16
+extern double codeIpriScale;         // 17
+extern double code_protect_inhibit_on;   // 18
 
-extern float Is_Max_Coeff;				// 206
-extern float code_OC_time;				// 207
+extern double Is_Max_Coeff;				// 206
+extern double code_OC_time;				// 207
 
 ///////////////////////////
 
 
-extern float code_Ki;					// 510
-extern float code_Kp;					// 511
-extern float code_integLimit;			// 512
-extern float code_phaseMax;			// 513
+extern double code_Ki;					// 510
+extern double code_Kp;					// 511
+extern double code_integLimit;			// 512
+extern double code_phaseMax;			// 513
 
 
-extern float Data_Check;				// 800
-extern float Data_Backup;				// 801
-extern float Data_Load;				// 802
-extern float Data_Init;				// 803
+extern double Data_Check;				// 800
+extern double Data_Backup;				// 801
+extern double Data_Load;				// 802
+extern double Data_Init;				// 803
 //***********************************************************
 #endif
 

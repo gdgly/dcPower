@@ -32,8 +32,8 @@ void epwmFullBridgeDisable()
 
 void initVariFullbridgeCtrl( )
 {
-	float x1,x2,y1,y2;
-    float phaseScale, phaseOffset;
+	double x1,x2,y1,y2;
+    double phaseScale, phaseOffset;
 
 	Ts = 1.0 / SWITCHING_FREQ;  //
 
@@ -80,10 +80,7 @@ void initVariFullbridgeCtrl( )
 	ctrlError= 0.0;
 	ctrlIntegral = 0.0;
 	preIntegral = 0.0;
-   ctrlMode = (int)(floor(code_ctrl_mode+0.5));
-   dbTs = 1.0 / SWITCHING_FREQ;  //
-   ctrlKp = 0.2;
-   ctrlKi = 50.0;
+   ctrlMode = (int)(code_ctrl_mode+0.2);
 }	
 
 void initEpwmFullBridge()
@@ -189,7 +186,7 @@ int mode3Current_P_I_LoopCtrl( )
 	int LoopCtrl;
 	int trip_code=0;
 	int command;
-	float ref_in0;
+	double ref_in0;
 
 	if( trip_code !=0 ) return trip_code;
 
@@ -237,9 +234,7 @@ int mode3Current_P_I_LoopCtrl( )
 			break;
 
 		case STATE_RUN:
-			
 			reference_in =  code_I_out_ref * 0.001 ;  // 1000Ampere �� �� 1.0���� ó���Ѵ�. 
-
 			if( command == CMD_NULL ) ramp_proc(reference_in, &reference_out);
 			else if( command == CMD_STOP ) { 
 				strncpy(MonitorMsg," CMD STOP     ",20);
@@ -286,7 +281,7 @@ int mode8LoopCtrl( )
 	int LoopCtrl;
 	int trip_code=0;
 	int command;
-	float ref_in0;
+	double ref_in0;
 
 	if( trip_code !=0 ) return trip_code;
 
@@ -378,7 +373,7 @@ int testFullBridgeLoopCtrl1( )
 	int LoopCtrl;
 	int trip_code=0;
 	int command;
-	float ref_in0;
+	double ref_in0;
 
 	if( trip_code !=0 ) return trip_code;
 
@@ -460,7 +455,7 @@ int pwmPulseTestLoopCtrl( )
 	int LoopCtrl;
 	int trip_code=0;
 	int command;
-	float ref_in0;
+	double ref_in0;
 
 	IER &= ~M_INT3;      // debug for PWM
 	initEpwmFullBridge(); 	// debug

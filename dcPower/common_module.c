@@ -1,14 +1,14 @@
 #include	<header.h>
 #include	<extern.h>
 
-float linear_eq(float x1, float x2, float y1, float y2, float x )
+double linear_eq(double x1, double x2, double y1, double y2, double x )
 {
-	float y;
+	double y;
 	y = (( y2-y1) / ( x2 - x1 )) * x  + (( y1 * x2 - y2 * x1 )/ (x2- x1));
 	return y;
 }
 
-void LPF1(float Ts,float pole,float in,float *out)
+void LPF1(double Ts,double pole,double in,double *out)
 {
 	*out+=pole*(in-*out)*Ts;
 }
@@ -17,7 +17,7 @@ void Nop()
 {
   asm ("      nop");
 }
-void PI_Damp_Controller(float limit,float Ts, float damp_factor, float Kp,float Ki,float ref,float feedback,float *integral,float *output)
+void PI_Damp_Controller(double limit,double Ts, double damp_factor, double Kp,double Ki,double ref,double feedback,double *integral,double *output)
 {
 	*integral+=Ki*(ref-feedback)*Ts;
 	if (*integral>fabs(limit))			*integral=fabs(limit);
@@ -77,7 +77,7 @@ int periodic_check(unsigned long  msec)
 	return -1;				
 }
 
-int iGetAinCmd(int * piCommand, float * pfReference)
+int iGetAinCmd(int * piCommand, double * pfReference)
 {
 	int iTemp;
 	iTemp = 0;
@@ -87,10 +87,10 @@ int iGetAinCmd(int * piCommand, float * pfReference)
 	return iTemp;
 }
 // 2018.0518 remove analog command proc
-void get_command( int * command, float * ref )
+void get_command( int * command, double * ref )
 {
 	int digital_cmd,sci_cmd;
-	float digital_reference,sci_ref;
+	double digital_reference,sci_ref;
 
 	digital_input_proc( & digital_cmd, & digital_reference);
 	serial_com_proc( & sci_cmd, & sci_ref );
@@ -117,11 +117,11 @@ void get_adc_offset()
     int LoopCtrl;
 
 	Uint32 RunTimeMsec,StartTimeMsec;
-	float u_offset_in, v_offset_in;
-	float R_offset_in, S_offset_in;
+	double u_offset_in, v_offset_in;
+	double R_offset_in, S_offset_in;
 
-	float u_offset_out, v_offset_out;
-	float R_offset_out, S_offset_out;
+	double u_offset_out, v_offset_out;
+	double R_offset_out, S_offset_out;
 	
 	UNION32 u32data;
 
@@ -138,10 +138,10 @@ void get_adc_offset()
 		RunTimeMsec = ulGetTime_mSec( StartTimeMsec);
 		if(RunTimeMsec > 1){
 			StartTimeMsec = ulGetNow_mSec( );
-			u_offset_in = (float)adc_result[0];
-			v_offset_in = (float)adc_result[1];
-			R_offset_in = (float)adc_result[3];
-			S_offset_in = (float)adc_result[4];
+			u_offset_in = (double)adc_result[0];
+			v_offset_in = (double)adc_result[1];
+			R_offset_in = (double)adc_result[3];
+			S_offset_in = (double)adc_result[4];
 
 			LPF1(0.002,10.0,u_offset_in, & u_offset_out);
 			LPF1(0.002,10.0,v_offset_in, & v_offset_out);

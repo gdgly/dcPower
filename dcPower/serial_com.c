@@ -67,7 +67,7 @@ void load_sci_tx_mail_box( char * str)
 //--- if no command from sci for 5 sec
 //--- then reset serial comm port
 
-void serial_com_proc( int * sci_cmd, float * sci_ref)
+void serial_com_proc( int * sci_cmd, double * sci_ref)
 {
     static unsigned long setTimeOut = 0;
 

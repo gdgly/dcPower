@@ -76,10 +76,12 @@ interrupt void MainPWM(void)
 
 			if( ctrlMode == 3 ){
 				ctrlError =  reference_out -  Iout * 0.001; // 1000 Amp Max�� �����
-				ctrlIntegral = preIntegral + ( dbTs * ctrlKi * ctrlError);
+				// ctrlIntegral = preIntegral + ( Ts * code_Ki * ctrlError);
+				ctrlIntegral = preIntegral + ( Ts * 50.0 * ctrlError);
 //            ctrlIntegral = (ctrlIntegral > code_integLimit) ? code_integLimit : ( ctrlIntegral < -code_integLimit) ? -code_integLimit : ctrlIntegral;
-              ctrlIntegral = (ctrlIntegral > 1.0 ) ? 1.0 : ( ctrlIntegral < -1.0) ? -1.0 : ctrlIntegral;
-				phaseShiftRatio = (ctrlError * ctrlKp) + ctrlIntegral;
+//             ctrlIntegral = (ctrlIntegral > 1.0 ) ? 1.0 : ( ctrlIntegral < -1.0) ? -1.0 : ctrlIntegral;
+	          ctrlIntegral = (ctrlIntegral > 1.0 ) ? 1.0 : ( ctrlIntegral < -1.0) ? -1.0 : ctrlIntegral;
+				phaseShiftRatio = (ctrlError * 0.2) + ctrlIntegral;
 				// Vout = VoutScale * reference_out  + VoutOffset ;  
 				if     ( phaseShiftRatio < 0.0 ) 	phaseShiftRatio = 0.0;
 				else if( phaseShiftRatio > MAX_PHASE ) 	phaseShiftRatio = MAX_PHASE;

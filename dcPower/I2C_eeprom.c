@@ -99,7 +99,7 @@ void read_eprom_data(int address, UNION32 * u32data)
 void data_under_proc(int address, UNION32 u32data)
 {
 	int trip_code;
-	float trip_data;
+	double trip_data;
 	
 	trip_code = address;
 	trip_data = u32data.dword;
@@ -109,7 +109,7 @@ void data_under_proc(int address, UNION32 u32data)
 void data_over_proc(int address,UNION32 u32data)
 {
 	int trip_code;
-	float trip_data;
+	double trip_data;
 	
 	trip_code = address;
 	trip_data = u32data.dword;
@@ -119,7 +119,7 @@ void data_over_proc(int address,UNION32 u32data)
 void invalid_address_proc(int address )
 {
 	int trip_code;
-	float trip_data;
+	double trip_data;
 	
 	trip_code = address;
 	trip_data = 0.0;

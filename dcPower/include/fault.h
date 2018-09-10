@@ -26,10 +26,10 @@ File Name:	fault.h
 
 struct TRIP_INFO_DEFINE {
 	int		CODE;				// 1
-	float	CURRENT;			// 5
-	float	VDC;				// 6
-	float	VOUT;				// 7
-	float	DATA;				// 4
+	double	CURRENT;			// 5
+	double	VDC;				// 6
+	double	VOUT;				// 7
+	double	DATA;				// 4
 	char 	MSG[21];			// 2
 };
 typedef struct TRIP_INFO_DEFINE TRIP_INFO;

@@ -1,15 +1,14 @@
 #include	<header.h>
 #include	<extern.h>
 
+double codeAccelTime1 = 5.0;
+double codeDecelTime1 = 1.0;
 
-float codeAccelTime1 = 20.0;
-float codeDecelTime1 = 1.0;
-
-void ramp_proc( float SetRef,float * pOutRef)
+void ramp_proc( double SetRef,double * pOutRef)
 {
 	static unsigned long ulCount;
 
-	float OutRef;
+	double OutRef;
 	
 	OutRef = * pOutRef;
 
