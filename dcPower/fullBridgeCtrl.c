@@ -80,6 +80,10 @@ void initVariFullbridgeCtrl( )
 	ctrlError= 0.0;
 	ctrlIntegral = 0.0;
 	preIntegral = 0.0;
+   ctrlMode = (int)(floor(code_ctrl_mode+0.5));
+   dbTs = 1.0 / SWITCHING_FREQ;  //
+   ctrlKp = 0.2;
+   ctrlKi = 50.0;
 }	
 
 void initEpwmFullBridge()

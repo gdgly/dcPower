@@ -7,11 +7,13 @@
 #include        <header.h>
 #include        <extern.h>
 
+#define MAX_PHASE   0.5
 double phase_ratio=0.0;
 
 interrupt void MainPWM(void)
 {
 //	unsigned int temp;
+
 	static int invt_PWM_Port_Set_flag = 0;
 
 //	MAIN_CHARGE_ON;
@@ -72,14 +74,15 @@ interrupt void MainPWM(void)
 			EPwm1Regs.CMPA.half.CMPA = MAX_PWM_CNT>>1;
 			EPwm2Regs.CMPA.half.CMPA = MAX_PWM_CNT>>1;
 
-			if( code_ctrl_mode == 3 ){ 
+			if( ctrlMode == 3 ){
 				ctrlError =  reference_out -  Iout * 0.001; // 1000 Amp Max�� �����
-				ctrlIntegral = preIntegral + (Ts * code_Ki * ctrlError);
-				ctrlIntegral = (ctrlIntegral > code_integLimit) ? code_integLimit : ( ctrlIntegral < -code_integLimit) ? -code_integLimit : ctrlIntegral;
-				phaseShiftRatio = (ctrlError * code_Kp) + ctrlIntegral;
+				ctrlIntegral = preIntegral + ( dbTs * ctrlKi * ctrlError);
+//            ctrlIntegral = (ctrlIntegral > code_integLimit) ? code_integLimit : ( ctrlIntegral < -code_integLimit) ? -code_integLimit : ctrlIntegral;
+              ctrlIntegral = (ctrlIntegral > 1.0 ) ? 1.0 : ( ctrlIntegral < -1.0) ? -1.0 : ctrlIntegral;
+				phaseShiftRatio = (ctrlError * ctrlKp) + ctrlIntegral;
 				// Vout = VoutScale * reference_out  + VoutOffset ;  
 				if     ( phaseShiftRatio < 0.0 ) 	phaseShiftRatio = 0.0;
-				else if( phaseShiftRatio > phaseVref ) 	phaseShiftRatio = phaseVref; 
+				else if( phaseShiftRatio > MAX_PHASE ) 	phaseShiftRatio = MAX_PHASE;
 				preIntegral = ctrlIntegral;
 				EPwm2Regs.TBPHS.half.TBPHS = (Uint16)( MAX_PWM_CNT * phaseShiftRatio * 0.5 );
 			} else if( code_ctrl_mode == 8 ){ // mode8LoopCtrl mode

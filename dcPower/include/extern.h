@@ -1,6 +1,11 @@
 #ifndef		__VARIABLES_
 #define		__VARIABLES_
 
+extern int ctrlMode;
+extern double dbTs;
+extern double ctrlKp;
+extern double ctrlKi;
+
 extern int dayRun;
 extern int hourRun;
 extern int secRun;
@@ -24,10 +29,10 @@ extern float nativeI2nd;
 extern float nativeI3rd;
 
 //--- PI control variable
-extern float ctrlError;
-extern float ctrlIntegral;
-extern float preIntegral;
-extern float phaseShiftRatio;
+extern double ctrlError;
+extern double ctrlIntegral;
+extern double preIntegral;
+extern double phaseShiftRatio;
 
 extern int code_run_input_select;
 
@@ -165,7 +170,7 @@ extern float code_I_out_ref;	    // 0
 extern float code_Vout;             // 1
 extern float code_VoutLimit;	    // 2
 extern float code_ovpTime;		    // 3
-extern float codeOcTime;            // 4
+extern float codeOcTime;           // 4
 extern float codePwmPhaseInit;	    // 5
 extern float codeInitTime;		    // 6
 

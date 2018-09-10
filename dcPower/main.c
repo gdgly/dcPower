@@ -195,8 +195,7 @@ void main( void )
 		get_command( & cmd, & ref_in0);
 
 		if(cmd == CMD_START){
-		    temp = (int)(floor(code_ctrl_mode+0.5));
-		    switch(temp){
+		    switch(ctrlMode){
 		        case 3: trip_code = mode3Current_P_I_LoopCtrl();break;
 		        case 8: trip_code = mode8LoopCtrl();break;
                 case 9: trip_code = pwmPulseTestLoopCtrl();break;

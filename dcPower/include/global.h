@@ -1,6 +1,11 @@
 #ifndef		__GLOBAL_VARIABLES_
 #define		__GLOBAL_VARIABLES_
 
+int ctrlMode;
+double dbTs;
+double ctrlKp;
+double ctrlKi;
+
 #if USE_GRAPH
 int graphCount=0;
 int y1_data[GRAPH_NUMBER];
@@ -16,10 +21,11 @@ float under_volt_set;
 float nativeI_out;
 float nativeI_pri;
 //--- PI control
-float ctrlError;
-float ctrlIntegral;
-float preIntegral;
-float phaseShiftRatio;
+
+double ctrlError;
+double ctrlIntegral;
+double preIntegral;
+double phaseShiftRatio;
 
 int code_run_input_select;
 float OC_Timer;
@@ -165,7 +171,7 @@ float code_I_out_ref;        // 0
 float code_Vout;             // 1
 float code_VoutLimit;        // 2
 float code_ovpTime;          // 3
-float codeOcTime;            // 4
+float codeOcTime;           // 4
 float codePwmPhaseInit;      // 5
 float codeInitTime;          // 6
 

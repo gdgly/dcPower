@@ -7,6 +7,8 @@
 #include	<header.h>
 #include	<extern.h>
 
+#define OVER_C_TIME 60.0
+
 void trip_recording(int trip_code,float trip_data,char * st)
 {
 	if(gRunFlag)	gTripSaveFlag = 1;
@@ -89,8 +91,8 @@ int CheckUndeVolt( )
 	if (Vdc < 400.0 ) 	UnderVoltCount++;
 	else if( UnderVoltCount > 0) 	UnderVoltCount--;
 
-	if (UnderVoltCount > 5 ){
-		UnderVoltCount = 6;
+	if (UnderVoltCount > 20 ){
+		UnderVoltCount = 20;
 		trip_recording( ERR_UV_VDC,Vdc,"Trip Vdc Under");
 		return ERR_UV_VDC;
 	}
