@@ -1,8 +1,8 @@
 #include	<header.h>
 #include	<extern.h>
 
-double codeAccelTime1 = 5.0;
-double codeDecelTime1 = 1.0;
+#define codeAccelTime1  5.0
+#define codeDecelTime1  1.0
 
 void ramp_proc( double SetRef,double * pOutRef)
 {
@@ -12,34 +12,18 @@ void ramp_proc( double SetRef,double * pOutRef)
 	
 	OutRef = * pOutRef;
 
- 	if( ulGetNow_mSec( )== ulCount ) return;
+ 	if( ulGetNow_mSec( ) == ulCount ) return;
 	
 	ulCount = ulGetNow_mSec( );
 
-	if(codeAccelTime1 <= 0.0) codeAccelTime1 = 0.01;			// debug
-	if(codeDecelTime1 <= 0.0) codeAccelTime1 = 0.01;			// debug
-
-	if( OutRef >= 0 )
-	{
-		if (SetRef > OutRef){ 
-			OutRef += 0.001 / codeAccelTime1;
-			if( OutRef > SetRef ) OutRef = SetRef;
-		}
-		else if (SetRef < OutRef){
-			OutRef -=  0.001 / codeDecelTime1 ;
-			if( OutRef < SetRef ) OutRef = SetRef;
-		}
-	}
-	else{
-		if (SetRef > OutRef){
-			OutRef += 0.001 / codeDecelTime1 ;
-			if( OutRef > SetRef ) OutRef = SetRef;
-		}
-		else if (SetRef < OutRef){
-			OutRef -= 0.001 / codeAccelTime1 ;
-			if( OutRef < SetRef ) OutRef = SetRef;
-		}
-	}
+	if (SetRef > OutRef){
+        OutRef += 0.001 / codeAccelTime1;
+        if( OutRef > SetRef ) OutRef = SetRef;
+    }
+    else if (SetRef < OutRef){
+        OutRef -=  0.001 / codeDecelTime1 ;
+        if( OutRef < SetRef ) OutRef = SetRef;
+    }
 	* pOutRef = OutRef; 
 }	
 
