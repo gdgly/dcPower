@@ -7,6 +7,7 @@
 	<buildSpec>
 		<buildCommand>
 			<name>org.eclipse.cdt.managedbuilder.core.genmakebuilder</name>
+			<triggers>clean,full,incremental,</triggers>
 			<arguments>
 			</arguments>
 		</buildCommand>
@@ -89,23 +90,23 @@
 	<variableList>
 		<variable>
 			<name>INSTALLROOT_F2806x</name>
-			<value>file:/home/eunwho/ti/C2000Ware_1_00_05_00/device_support/f2806x</value>
+			<value>file:/home/eunwho/ti/C2000Ware_2_01_00_00/device_support/f2806x</value>
 		</variable>
 		<variable>
 			<name>INSTALLROOT_F2806x_TO_MWARE</name>
-			<value>$%7BINSTALLROOT_F2806x%7D/MWare</value>
+			<value>file:/home/eunwho/ti/C2000Ware_2_01_00_00/device_support/f2806x/MWare</value>
 		</variable>
 		<variable>
 			<name>INSTALLROOT_FASTRTS</name>
-			<value>file:/home/eunwho/ti/C2000Ware_1_00_05_00/libraries/math/FPUfastRTS/c28</value>
+			<value>file:/home/eunwho/ti/C2000Ware_2_01_00_00/libraries/math/FPUfastRTS/c28</value>
 		</variable>
 		<variable>
 			<name>INSTALLROOT_HCCAL</name>
-			<value>file:/home/eunwho/ti/C2000Ware_1_00_05_00/libraries/calibration/hrcap</value>
+			<value>file:/home/eunwho/ti/C2000Ware_2_01_00_00/libraries/calibration/hrcap</value>
 		</variable>
 		<variable>
 			<name>INSTALLROOT_IQMATH</name>
-			<value>file:/home/eunwho/ti/C2000Ware_1_00_05_00/libraries/math/IQmath/c28</value>
+			<value>file:/home/eunwho/ti/C2000Ware_2_01_00_00/libraries/math/IQmath/c28</value>
 		</variable>
 	</variableList>
 </projectDescription>
