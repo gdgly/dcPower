@@ -1,6 +1,22 @@
 #ifndef		__VARIABLES_
 #define		__VARIABLES_
 
+extern double * scopePoint[10];
+
+extern double dAdcIout;
+extern double dAdcIpri;
+extern double dAdcVdc;
+extern double dAdcVout;
+
+extern int graphPoint[4];
+extern double invGraphScale[4];
+
+extern int scia_tx_start_addr;
+extern int scia_tx_end_addr;
+
+extern int digitalInputState;
+extern int pwmTripState;
+
 extern int ctrlMode;
 extern double dbTs;
 extern double ctrlKp;
@@ -144,21 +160,6 @@ extern double OverCurLimit;
 extern int EepromSaveFlag;
 extern int Flag_TripDataBackup;
 
-extern double	inv_code_dac_scale_ch1;
-extern double	inv_code_dac_scale_ch2;
-extern double	inv_code_dac_scale_ch3;
-extern double	inv_code_dac_scale_ch4;
-
-extern double code_adc_vdc_low;          // 710
-extern double code_adc_vdc_high;     // 711
-extern double code_Vdc_calc_low;     // 712
-extern double code_Vdc_calc_high;        // 713
-
-extern double code_adc_Vout_low;     // 715
-extern double code_adc_Vout_high;        // 716
-extern double code_Vout_calc_low;        // 717
-extern double code_Vout_calc_high;       // 718
-
 extern double codeVdcOffset;         // 410
 extern double codeVdcSpan;               // 411
 extern double codeVoutOffset;            // 412
@@ -183,6 +184,20 @@ extern double codeIpriAdcOffset;     // 15
 extern double codeIoutScale;         // 16
 extern double codeIpriScale;         // 17
 extern double code_protect_inhibit_on;   // 18
+
+extern double codeGraphPoint[4];
+extern double codeGraphScale[4];
+extern double codeGraphOffset[4];
+
+extern double codeVdcAdcLow;
+extern double codeVdcAdcHigh;
+extern double codeVdcCalcLow;
+extern double codeVdcCalcHigh;
+
+extern double codeVoutAdcLow;
+extern double codeVoutAdcHigh;
+extern double codeVoutCalcLow;
+extern double codeVoutCalcHigh;
 
 extern double Is_Max_Coeff;				// 206
 extern double code_OC_time;				// 207

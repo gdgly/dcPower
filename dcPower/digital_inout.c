@@ -1,6 +1,24 @@
 #include	<header.h>
 #include	<extern.h>
 
+void readPwmTripInputState( int * digitalInput, int * pwmTrip ){
+
+    int pwm, in;
+
+    pwm = in = 0;
+
+    if( PWM0_HIGH_FAULT == 0) pwm += 1;
+    if( PWM0_LOW_FAULT == 0) pwm += 2;
+    if( PWM1_HIGH_FAULT == 0) pwm += 4;
+    if( PWM1_LOW_FAULT == 0) pwm += 8;
+
+    if( EX_TRIP_INPUT   == 0)   in += 1;
+    if( RUN_INPUT == 0)         in += 2;
+
+    * digitalInput  = in;
+    * pwmTrip       = pwm;
+}
+
 void fault_reset()
 {
 	Nop();

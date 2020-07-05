@@ -27,7 +27,8 @@ void main( void )
 {
     // UNION32 data;
     // int i;
-    int trip_code,loop_ctrl,temp,count;
+//    int trip_code,loop_ctrl,temp,count;
+    int trip_code,loop_ctrl,temp;
 	int cmd;
 	double ref_in0;
 

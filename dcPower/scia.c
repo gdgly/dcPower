@@ -1,8 +1,10 @@
 #include	<header.h>
 #include	<extern.h>
 // include <scia,h>
-
 #if	USE_UART_A
+
+#define INV_IOUT_SCALE      0.005   // 1/200
+#define INV_POWER_SCALE     0.0025   // 1/4000
 
 #define CPU_FREQ    90E6
 #define LSPCLK_FREQ CPU_FREQ/4
@@ -61,6 +63,36 @@ void scia_fifo_init()
 	IER |= M_INT9;		// M == 0x0100 scia irq
 }
 
+int load_scia_tx_mail_box_char( char msg)
+{
+    if( msg == 0 ) return -1;
+
+    scia_tx_msg_box[scia_tx_end_addr] = msg;
+
+    if(scia_tx_end_addr < ( SCIA_TX_BUF_MAX-1)) scia_tx_end_addr ++;
+    else                                        scia_tx_end_addr = 0;
+
+    if(scia_tx_end_addr == scia_tx_start_addr){
+        if(scia_tx_end_addr < (SCIA_TX_BUF_MAX-1)) scia_tx_start_addr++;
+        else                                        scia_tx_start_addr = 0;
+    }
+    return 0;
+}
+
+void load_scia_tx_mail_box_bk( char * st)
+{
+    int loop_count;
+    char * str;
+    str = st;
+    SciaRegs.SCIFFTX.bit.TXFFIENA = 0;  // Clear SCI Interrupt flag
+    loop_count = 0;
+     while(( * str != 0) && ( loop_count < 40)) {
+         load_scia_tx_mail_box_char(*str++);
+         loop_count ++;
+     }
+    SciaRegs.SCIFFTX.bit.TXFFIENA = 1;  // Clear SCI Interrupt flag
+}
+
 void load_scia_tx_mail_box( char * st)
 {
 	int i;
@@ -80,6 +112,20 @@ void load_scia_tx_mail_box( char * st)
 		}
 	}
 	SciaRegs.SCIFFTX.bit.TXFFIENA = 1;	// Clear SCI Interrupt flag
+}
+
+void loadSciaTxMailBox( char * st)
+{
+    int loop_count;
+    char * str;
+    str = st;
+    SciaRegs.SCIFFTX.bit.TXFFIENA = 0;  // Clear SCI Interrupt flag
+    loop_count = 0;
+     while((*str != 0) && ( loop_count < 20)) {
+         load_scia_tx_mail_box_char(*str++);
+         loop_count ++;
+     }
+    SciaRegs.SCIFFTX.bit.TXFFIENA = 1;  // Clear SCI Interrupt flag
 }
 		
 interrupt void sciaTxFifoIsr(void)
@@ -136,12 +182,170 @@ interrupt void sciaRxFifoIsr(void)
     PieCtrlRegs.PIEACK.all|=0x0100;     // IN9
 }
 
+void sciaMonitor()     // need_edit
+{
+    UNION16 unionGraph[6];
+
+    int i, temp;
+    double fTemp;
+    char str[60] ={0};
+
+    switch(gMachineState){
+        case STATE_POWER_ON:    strncpy(MonitorMsg,"[POWON]",7); break;
+        case STATE_READY:       strncpy(MonitorMsg,"[READY]",7); break;
+        case STATE_RUN:         strncpy(MonitorMsg,"[RUN  ]",7); break;
+        case STATE_INIT_RUN:    strncpy(MonitorMsg,"[INIT ]",7); break;
+        case STATE_GO_STOP:     strncpy(MonitorMsg,"[GSTOP]",7); break;
+        case STATE_TRIP:
+            strncpy(MonitorMsg,"[TRIP ]",7);
+            break;
+        default:  strncpy(MonitorMsg,"[SYERR]",7); break;
+    }
+
+    if(gMachineState == STATE_TRIP){
+        snprintf( str,20,"TripCode=%03d : ",TripInfoNow.CODE);
+        load_scia_tx_mail_box(str);
+        load_scia_tx_mail_box(TripInfoNow.MSG);
+
+        fTemp = TripInfoNow.VOUT;
+        temp = (int)(floor(fTemp + 0.5));
+        snprintf( str,30," : TripVout= %4d :",temp);
+        load_scia_tx_mail_box(str);
+
+        temp = (int)(floor(TripInfoNow.VDC +0.5));
+        snprintf( str,30,"tripVDC=%4d : ",temp);
+        load_scia_tx_mail_box(str);
+
+        fTemp = TripInfoNow.CURRENT;
+        temp = (int)(floor(fTemp*10 +0.5));
+        snprintf( str,30,"tripI = %3d.%1dA : ",(temp/10),temp%10);
+        load_scia_tx_mail_box(str);
+
+        temp = (int)(floor(TripInfoNow.DATA +0.5));
+        snprintf( str,30,"tripData=%4d \r\n",temp);
+        load_scia_tx_mail_box(str);
+        // free(TripData);
+        return;
+    }
+
+    strncpy( str,"9:4:900:1.000e+1:",17); load_scia_tx_mail_box(str);
+    load_scia_tx_mail_box(MonitorMsg);
+
+    unionGraph[4].INTEGER    = (int)( Iout * INV_IOUT_SCALE * 409.6) + 2048;
+    unionGraph[5].INTEGER    = (int)( Pout * INV_POWER_SCALE * 409.6) + 2048;
+
+    for ( i = 0 ; i < 4 ; i ++ ){
+
+        temp = graphPoint[i];
+        temp = (int)( ( * scopePoint[temp] - codeGraphOffset[i] ) * invGraphScale[i] * 2048 + 2048);
+        temp    = ( temp > 4000 ) ? 4000 : temp;
+        temp    = ( temp < 50   ) ? 50   : temp;
+        unionGraph[i].INTEGER    = temp;
+
+        str[ i*3 + 0] = (( unionGraph[i].byte.MSB     ) & 0x0f) | 0x40 ;
+        str[ i*3 + 1] = (( unionGraph[i].byte.LSB >> 4) & 0x0f) | 0x40;
+        str[ i*3 + 2] = (( unionGraph[i].byte.LSB     ) & 0x0f) | 0x40;
+    }
+
+    i = 4;
+    unionGraph[4].INTEGER    = (int)( Iout * INV_IOUT_SCALE * 409.6) + 2048;
+    str[ i*3 + 0] = (( unionGraph[i].byte.MSB     ) & 0x0f) | 0x40 ;
+    str[ i*3 + 1] = (( unionGraph[i].byte.LSB >> 4) & 0x0f) | 0x40;
+    str[ i*3 + 2] = (( unionGraph[i].byte.LSB     ) & 0x0f) | 0x40;
+
+    i = 5;
+    unionGraph[5].INTEGER    = (int)( Pout * INV_POWER_SCALE * 409.6) + 2048;
+    str[ i*3 + 0] = (( unionGraph[i].byte.MSB     ) & 0x0f) | 0x40 ;
+    str[ i*3 + 1] = (( unionGraph[i].byte.LSB >> 4) & 0x0f) | 0x40;
+    str[ i*3 + 2] = (( unionGraph[i].byte.LSB     ) & 0x0f) | 0x40;
+
+    str[ i*3 + 3 ] = '\r';
+    str[ i*3 + 4 ] = '\n';
+    str[ i*3 + 5 ] = 0;
+    load_scia_tx_mail_box(str);
+}
+
+
+void sciaMonitorLcd()     // need_edit
+{
+    static int count;
+
+    int temp;
+    double fTemp;
+    char str[100] ={0};
+    char status[11] = {0};
+
+    switch(gMachineState){
+
+        case STATE_POWER_ON:    strncpy(status,"[POWON]",7); break;
+        case STATE_READY:       strncpy(status,"[READY]",7); break;
+        case STATE_RUN:         strncpy(status,"[RUN  ]",7); break;
+        case STATE_INIT_RUN:    strncpy(status,"[INIT ]",7); break;
+        case STATE_GO_STOP:     strncpy(status,"[GOSTP]",7); break;
+        case STATE_TRIP:
+            strncpy(status,"[TRIP ]",7);
+            break;
+        default:  strncpy(status,"[SYERR]",7); break;
+    }
+
+    if(gMachineState == STATE_TRIP){
+        snprintf( str,20,"TripCode=%03d : ",TripInfoNow.CODE);
+        load_scia_tx_mail_box(str);
+        load_scia_tx_mail_box(TripInfoNow.MSG);
+
+        fTemp = TripInfoNow.CURRENT;
+        temp = (int)(floor(fTemp*10 +0.5));
+        snprintf( str,30,"tripI = %3d.%1dA : ",(temp/10),temp%10);
+        load_scia_tx_mail_box(str);
+
+        fTemp = TripInfoNow.VOUT;
+        temp = (int)(floor(fTemp + 0.5));
+        snprintf( str,30," : TripRpm= %4d :",temp);
+        load_scia_tx_mail_box(str);
+
+        temp = (int)(floor(TripInfoNow.VDC +0.5));
+        snprintf( str,30,"tripVDC=%4d : ",temp);
+        load_scia_tx_mail_box(str);
+
+
+        temp = (int)(floor(TripInfoNow.DATA +0.5));
+        snprintf( str,30,"tripData=%4d \r\n",temp);
+        load_scia_tx_mail_box(str);
+        // free(TripData);
+        return;
+    }
+    switch(count){
+    case 0: status[7] = 0x7c; break;
+    case 1: status[7] = 0x2f; break;
+    case 2: status[7] = 0x7e; break;
+    case 3: status[7] = 0xa4; break;
+    case 4: status[7] = 0x7c; break;
+    case 5: status[7] = 0x2f; break;
+    case 6: status[7] = 0x7f; break;
+    case 7: status[7] = 0x60; break;
+    }
+    count = (count > 6 )? 0 : count+1;
+    status[8] = 0;
+
+    temp  = (int)(floor( Iout + 0.5));
+    snprintf( str,28,"9:4:900:%8s Io :%4dA",status,temp);
+    load_scia_tx_mail_box(str);
+    //load_scia_tx_mail_box(str);
+
+    temp  = (int)(floor( Vdc + 0.5));
+    fTemp = Pout/1000;
+
+    snprintf( str,25,"Vd:%4dV Po:%.2fkW\r\n",temp,fTemp);
+    load_scia_tx_mail_box(str);
+    // load_scia_tx_mail_box(str);
+}
+
 // read data format   "9:4:123:x.xxxe-x"
 // write data format  "9:6:123:1.234e-3"
 void scia_cmd_proc( int * sci_cmd, double * sci_ref)
 {
 	double data,dbtemp;
-    int addr,check,temp;
+    int addr,check,temp,inputState,pwmState;
     char str[41]={0};
 
     TRIP_INFO * TripData;
@@ -217,11 +421,8 @@ void scia_cmd_proc( int * sci_cmd, double * sci_ref)
      else if(scia_rx_msg_box[2] == '4'){
          if(addr == 900){    //  monitor state
              check = (int)data;
-             monitor_proc();
-             load_scia_tx_mail_box(monitOut1); delay_msecs(10);
-             load_scia_tx_mail_box(monitOut2); delay_msecs(10);
-             load_scia_tx_mail_box(monitOut3); delay_msecs(10);
-             load_scia_tx_mail_box(monitOut4); delay_msecs(10);
+             if(data < 10)  sciaMonitorLcd();
+             else           sciaMonitor( );
              Nop();
              return;
          }
@@ -229,7 +430,6 @@ void scia_cmd_proc( int * sci_cmd, double * sci_ref)
              check = (int)data;
              if(check==0){
                  readAllCodes();
-                 load_scia_tx_mail_box("\x02ok! read code all\x03\r\n");
              }
              return;
          }
@@ -322,23 +522,39 @@ void scia_cmd_proc( int * sci_cmd, double * sci_ref)
              default: * sci_cmd = CMD_NULL; break;
              }
              return;
-         }
-         else if ( addr == 980){
-             sprintf( str,"\x02 2Iout=%04d :Ipri:%04d \x03\r\n",adc_result[0],adc_result[1]);
-             load_scia_tx_mail_box(str); delay_msecs(100);
-             sprintf( str,"\x02 3Vdc =%04d :Vout:%04d \x03\r\n",adc_result[2],adc_result[3]);
-             load_scia_tx_mail_box(str); delay_msecs(100);
+         } else if (addr == 908 ){
+             // read input
+             readPwmTripInputState( & inputState, & pwmState );
+             snprintf( str,40,"INPUT=%d : pwm=%d \r\n",inputState,pwmState); load_scia_tx_mail_box(str);
+             // load_scia_tx_mail_box("hello eunwho!")
+             delay_msecs(10);
+             return;
+         } else if (addr == 909 ){
+              snprintf( str,30,"Irms = %.1f : ",Iout); load_scia_tx_mail_box(str);
+              snprintf( str,20,"Vout = %.1f : ",Vout); load_scia_tx_mail_box(str);
+              snprintf( str,30,"Pout = %.2f : ",Pout); load_scia_tx_mail_box(str);
+              snprintf( str,30,"Vdc = %.1f : ",Vdc); load_scia_tx_mail_box(str);
+              load_scia_tx_mail_box(" \r\n");
+              delay_msecs(10);
+              return;
+         } else if (addr == 910 ){ // read adc
+             snprintf( str,20,"Io = %4d : ",adcIout); load_scia_tx_mail_box(str);
+             snprintf( str,20,"Ipri = %4d : ",adcIpri); load_scia_tx_mail_box(str);
+             snprintf( str,20,"Vdc= %4d : ",adcVdc); load_scia_tx_mail_box(str);
+             snprintf( str,20,"Vo= %4d : ",adcVout); load_scia_tx_mail_box(str);
+             load_scia_tx_mail_box(" \r\n");
+             delay_msecs(10);
              return;
          }
 
          check = get_code_information( addr, CMD_READ_DATA , & code_inform);
          if( check == 0 ){
-             sprintf( str,"\x02 1%s \x03\r\n",code_inform.disp);
-             load_scia_tx_mail_box(str); delay_msecs(10);
-             sprintf( str,"\x02 2CODE=%3d \x03\r\n",addr);
-             load_scia_tx_mail_box(str); delay_msecs(10);
-             sprintf( str,"\x02 3DATA=%.3e \x03\r\n",code_inform.code_value);
-             load_scia_tx_mail_box(str); delay_msecs(10);
+             sprintf( str,"CODE=%3d : ",addr);
+             load_scia_tx_mail_box(str);
+             sprintf( str,"DATA=%.3e : ",code_inform.code_value);
+             load_scia_tx_mail_box(str);
+             sprintf( str,"%s\r\n",code_inform.disp);
+             load_scia_tx_mail_box(str);
          } else{
              load_scia_tx_mail_box("\x02Error Invalid Address\x03\r\n");delay_msecs(10);
          }

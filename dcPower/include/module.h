@@ -1,6 +1,7 @@
 #ifndef		__FUNCTION_MODULE_DEFINITION_
 #define		__FUNCTION_MODULE_DEFINITION_
 
+void loadSciaTxMailBox( char * st);
 extern int CheckOVP( );
 extern void monitorPrint( char * charOut, double argIn);
 //--- fullBridgeCtrl.c
@@ -52,6 +53,7 @@ extern void input_ext_fault_a_proc();
 extern void serial_com_proc( int * sci_cmd, double * sci_reference );
 extern void load_sci_tx_mail_box(char *st);
 extern void load_scia_tx_mail_box( char * st);
+extern void readPwmTripInputState( int * digitalInput, int * pwmTrip );
 
 // uart_c.c 
 extern void sendAllCodeData(void);
@@ -62,6 +64,7 @@ extern void scia_fifo_init(void);
 extern void load_scia_tx_mail_box(char *st);
 interrupt void cpu_timer0_isr(void);
 interrupt void MainPWM(void);
+void sciaMonitorLcd();           // need_edit
 
 // analog.c
 extern void ADC_SOC_CNF();

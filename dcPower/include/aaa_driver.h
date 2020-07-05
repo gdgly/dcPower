@@ -47,6 +47,16 @@ typedef union
 	} byte;
 } UNION32;
 
+typedef union
+{
+    int   INTEGER;          /* float word : 32bit */
+    struct
+    {
+        unsigned LSB  :8; /* LSB */
+        unsigned MSB  :8;
+    } byte;
+} UNION16;
+
 #define	STATE_POWER_ON			0
 #define	STATE_READY				1
 #define	STATE_RUN				2
@@ -67,7 +77,7 @@ typedef union
 //-- uart 
 
 #define SCIA_RX_BUF_MAX     30
-#define SCIA_TX_BUF_MAX     80
+#define SCIA_TX_BUF_MAX     200
 
 #define CMD_NULL			  	0
 #define CMD_START				0x0041	//'A'

@@ -32,31 +32,34 @@ void epwmFullBridgeDisable()
 
 void initVariFullbridgeCtrl( )
 {
+    int i;
+
 	double x1,x2,y1,y2;
     double phaseScale, phaseOffset;
 
 	Ts = 1.0 / SWITCHING_FREQ;  //
 
+	for( i = 0 ; i < 4 ; i++ ){
+        graphPoint[i]    = (int)( floor(codeGraphPoint[i] + 0.5 ) );
+        invGraphScale[i] = 1.0 / ( codeGraphScale[i] * 5 );
+ 	}
 	// for Vdc calc
-//	x1 = code_adc_vdc_low;		y1 = code_Vdc_calc_low;
-//    x2 = code_adc_vdc_high;		y2 = code_Vdc_calc_high;
-	x1 = 3052.0   ; y1 = 400.0;
-	x2 = 3330.0   ; y2 = 546.0;
+	x1 = codeVdcAdcLow;		    y1 = codeVdcCalcLow;
+	x2 = codeVdcAdcHigh;		y2 = codeVdcCalcHigh;
 
 	VdcScale = ( y2-y1) / ( x2 - x1 );
 	VdcOffset = (( y1 * x2 - y2 * x1 )/ (x2- x1));
 
 // for Vout calc 
-	//  x1 = code_adc_Vout_low;     y1 = code_Vout_calc_low;
-	//  x2 = code_adc_Vout_high;    y2 = code_Vout_calc_high;
-	x1 = 1700.0;     y1 = 0.0;
-	x2 = 2533.0;     y2 = 4.0;
+	x1 = codeVoutAdcLow;        y1 = codeVoutCalcLow;
+	x2 = codeVoutAdcHigh;       y2 = codeVoutCalcHigh;
+
 	VoutScale = ( y2-y1) / ( x2 - x1 );
 	VoutOffset = (( y1 * x2 - y2 * x1 )/ (x2- x1));
 
 // for Phase calc 
-	y1 = code_adc_Vout_low;		x1 = code_Vout_calc_low;
-	y2 = code_adc_Vout_high;	x2 = code_Vout_calc_high;
+	y1 = codeVoutAdcLow;		x1 = codeVoutCalcLow;
+	y2 = codeVoutAdcHigh;	    x2 = codeVoutCalcHigh;
 
 	phaseScale = ( y2-y1) / ( x2 - x1 );
 	phaseOffset = (( y1 * x2 - y2 * x1 )/ (x2- x1));

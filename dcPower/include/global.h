@@ -1,6 +1,19 @@
 #ifndef		__GLOBAL_VARIABLES_
 #define		__GLOBAL_VARIABLES_
 
+double * scopePoint[10];
+
+double dAdcIout;
+double dAdcIpri;
+double dAdcVdc;
+double dAdcVout;
+
+int graphPoint[4];
+double invGraphScale[4];
+
+int digitalInputState;
+int pwmTripState;
+
 int ctrlMode;
 double dbTs;
 double ctrlKp;
@@ -65,15 +78,6 @@ double analog_ref_a;
 double analog_ref_b;
 //---
 double * dac_point[200];
-double dac_ch0_unit_count_value;
-double dac_ch1_unit_count_value;
-double dac_ch2_unit_count_value;
-double dac_ch3_unit_count_value;
-
-double	inv_code_dac_scale_ch1;
-double	inv_code_dac_scale_ch2;
-double	inv_code_dac_scale_ch3;
-double	inv_code_dac_scale_ch4;
 //===================
 
 int dayRun ;
@@ -184,6 +188,20 @@ double codeIpriAdcOffset;     // 15
 double codeIoutScale;         // 16
 double codeIpriScale;         // 17
 double code_protect_inhibit_on;   // 18
+
+double codeGraphPoint[4];
+double codeGraphScale[4];
+double codeGraphOffset[4];
+
+double codeVdcAdcLow;
+double codeVdcAdcHigh;
+double codeVdcCalcLow;
+double codeVdcCalcHigh;
+
+double codeVoutAdcLow;
+double codeVoutAdcHigh;
+double codeVoutCalcLow;
+double codeVoutCalcHigh;
 
 double Data_Check;				// 800
 double Data_Backup;				// 801

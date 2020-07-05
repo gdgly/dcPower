@@ -63,6 +63,11 @@ interrupt void adcIsr(void)
     adc_result[2] = adcVdc  = AdcResult.ADCRESULT2; // Vdc
     adc_result[3] = adcVout = AdcResult.ADCRESULT3; // Vout
 
+    dAdcIout = (double)adcIout;
+    dAdcIpri = (double)adcIpri;
+    dAdcVdc  = (double)adcVdc;
+    dAdcVout = (double)adcVout;
+
     nativeIout = -IOUT_SCALE * ( adcIout-codeIoutAdcOffset ) * codeIoutScale;
     nativeIpri = -IPRI_SCALE * ( adcIpri-codeIoutAdcOffset ) * codeIpriScale;
     nativeVout = VoutScale * ( adcVout)  + VoutOffset;

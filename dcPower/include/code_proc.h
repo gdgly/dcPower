@@ -25,7 +25,33 @@
 #define CODE_IpriScale                  17
 #define CODE_protect_inhibit_on         18
 
-#define CODE_END                        19
+#define CODE_graphPoint1              21
+#define CODE_graphScale1              22
+#define CODE_graphOffset1             23
+
+#define CODE_graphPoint2              26
+#define CODE_graphScale2              27
+#define CODE_graphOffset2             28
+
+#define CODE_graphPoint3              31
+#define CODE_graphScale3              32
+#define CODE_graphOffset3             33
+
+#define CODE_graphPoint4              36
+#define CODE_graphScale4              37
+#define CODE_graphOffset4             38
+
+#define CODE_VdcAdcLow                  41
+#define CODE_VdcAdcHigh                 42
+#define CODE_VdcCalcLow                 43
+#define CODE_VdcCalcHigh                44
+
+#define CODE_VoutAdcLow                  46
+#define CODE_VoutAdcHigh                 47
+#define CODE_VoutCalcLow                 48
+#define CODE_VoutCalcHigh                49
+
+#define CODE_END                        50
 
 #define CODE_Data_Check                     800
 #define CODE_Data_Backup                    801
